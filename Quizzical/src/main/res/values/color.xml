@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="light_blue">#00bfff</color>
+    <color name="blue">#4169e1</color>
+    <color name="pink">#FF6A6A</color>
+    <color name="red">#DC143C</color>
+    <color name="green">#32cd32</color>
+    <color name="white">#ffffff</color>
+    <color name="orange">#ff8c00</color>
+    <color name="yellow">#ffd700</color>
+    <color name="dark_green">#228b22</color>
+
+    <array name="grade_colors">
+        <item>@color/red</item>
+        <item>@color/orange</item>
+        <item>@color/yellow</item>
+        <item>@color/green</item>
+        <item>@color/light_blue</item>
+    </array>
+
+</resources>

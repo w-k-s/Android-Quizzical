@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#404040"
+    android:orientation="vertical"
+    android:weightSum="100" >
+
+    <TextView
+        android:id="@+id/tv_question"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="80"
+        android:background="@drawable/chalkboard"
+        android:textColor="#ffffff"
+        android:textSize="15dip"
+        android:gravity="center"
+        android:tag="tv_question"
+        android:scrollbars="vertical"/>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="*"
+        >
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <Button
+                android:id="@+id/btn_A"
+                style="@style/quiz_button"
+                android:layout_width="match_parent"
+                android:tag="btn_A"
+                />
+
+            <Button
+                android:id="@+id/btn_B"
+                style="@style/quiz_button"
+                android:layout_width="match_parent"
+                android:tag="btn_B"
+                />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <Button
+                android:id="@+id/btn_C"
+                style="@style/quiz_button"
+                android:layout_width="match_parent"
+                android:tag="btn_C"
+                />
+
+            <Button
+                android:id="@+id/btn_D"
+                style="@style/quiz_button"
+                android:layout_width="match_parent"
+                android:tag="btn_D"
+                />
+
+        </TableRow>
+    </TableLayout>
+</LinearLayout>
