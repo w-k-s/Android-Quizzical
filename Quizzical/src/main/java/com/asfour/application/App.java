@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class App extends Application {
 
-    public static interface Extras{
+    public static interface Extras {
         String Category = "com.asfour.extras.category";
         String Categories = "com.asfour.extras.categories";
         String Questions = "com.asfour.extras.questions";
@@ -23,7 +23,7 @@ public class App extends Application {
         String Score = "com.asfour.extras.score";
     }
 
-    public static interface Observables{
+    public static interface Observables {
         String Categories = "com.asfour.observables.categories";
         String Questions = "com.asfour.observables.questions";
     }
@@ -43,28 +43,28 @@ public class App extends Application {
         configureOkHttpClient();
     }
 
-    public final OkHttpClient getOkHttpClent(){
+    public final OkHttpClient getOkHttpClent() {
         return mClient;
     }
 
-    public void setFontsOverride(){
+    public void setFontsOverride() {
         FontsOverride.setDefaultFont(this, "DEFAULT", "ArchitectsDaughter.ttf");
         FontsOverride.setDefaultFont(this, "MONOSPACE", "ArchitectsDaughter.ttf");
         FontsOverride.setDefaultFont(this, "SERIF", "ArchitectsDaughter.ttf");
         FontsOverride.setDefaultFont(this, "SANS_SERIF", "ArchitectsDaughter.ttf");
     }
 
-    private final void configureOkHttpClient(){
+    private final void configureOkHttpClient() {
 
         mClient = new OkHttpClient();
         mClient.setConnectTimeout(CONNECTION_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
 
-        try{
-            File cacheDir = new File(getCacheDir(),CACHE_DIR_NAME);
-            Cache cache = new Cache(cacheDir,CACHE_SIZE);
+        try {
+            File cacheDir = new File(getCacheDir(), CACHE_DIR_NAME);
+            Cache cache = new Cache(cacheDir, CACHE_SIZE);
             mClient.setCache(cache);
-        }catch(Exception e){
-            Log.e(TAG, "Cahce directory could not be set",e);
+        } catch (Exception e) {
+            Log.e(TAG, "Cahce directory could not be set", e);
         }
     }
 }

@@ -7,8 +7,8 @@
     <string name="downloading_categories">Downloading Categories</string>
     <string name="downloading_questions">Downloading Questions</string>
     <string name="err_fetching_categories">Categories could not be downloaded.</string>
-	<string name="err_fetching_questions">Questions could not be downloaded.</string>
-	<string name="err_no_questions">Questions for this category couldn\'t be loaded.</string>
-	<string name="text_select_category">Select a category:</string>
-	<string name="text_score_heading">You scored </string>
+    <string name="err_fetching_questions">Questions could not be downloaded.</string>
+    <string name="err_no_questions">Questions for this category couldn\'t be loaded.</string>
+    <string name="text_select_category">Select a category:</string>
+    <string name="text_score_heading">You scored </string>
 </resources>

@@ -25,22 +25,22 @@ public class QuizScore implements Parcelable {
     private int score;
     private int maxScore;
 
-    private static final String[] GRADES = {"D","C","B","A","A+"};
+    private static final String[] GRADES = {"D", "C", "B", "A", "A+"};
 
-    public QuizScore(int maxScore){
+    public QuizScore(int maxScore) {
         this.score = 0;
         this.maxScore = maxScore;
     }
 
-    public QuizScore(Parcel in){
+    public QuizScore(Parcel in) {
         this.score = in.readInt();
         this.maxScore = in.readInt();
     }
 
-    public void increment(){
+    public void increment() {
         Preconditions.checkArgument(
                 (score + 1) <= maxScore,
-                "Score: %d can not exceed max: %d",score,maxScore
+                "Score: %d can not exceed max: %d", score, maxScore
         );
 
         ++score;
@@ -54,12 +54,12 @@ public class QuizScore implements Parcelable {
         return maxScore;
     }
 
-    public double getPercentage(){
-        return 100.0 * ((double)this.score / (double)this.maxScore);
+    public double getPercentage() {
+        return 100.0 * ((double) this.score / (double) this.maxScore);
     }
 
-    public String getGrade(){
-        return GRADES[(int)getPercentage()/25];
+    public String getGrade() {
+        return GRADES[(int) getPercentage() / 25];
     }
 
     @Override
@@ -76,8 +76,8 @@ public class QuizScore implements Parcelable {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("score",this.score)
-                .add("maxScore",this.maxScore)
+                .add("score", this.score)
+                .add("maxScore", this.maxScore)
                 .toString();
     }
 }

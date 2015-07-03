@@ -12,7 +12,7 @@ import org.simpleframework.xml.Root;
  * Created by Waqqas on 02/07/15.
  */
 @Root
-public class Category implements Parcelable{
+public class Category implements Parcelable {
 
     public static final Parcelable.Creator<Category> CREATOR
             = new Parcelable.Creator<Category>() {
@@ -25,18 +25,18 @@ public class Category implements Parcelable{
         }
     };
 
-    @Element(name="Name")
+    @Element(name = "Name")
     private String name;
 
-    private Category(){
+    private Category() {
         this.name = "";
     }
 
-    public Category(String name){
+    public Category(String name) {
         this.name = name;
     }
 
-    public Category(Parcel in){
+    public Category(Parcel in) {
         name = in.readString();
     }
 
@@ -58,7 +58,7 @@ public class Category implements Parcelable{
     public String toString() {
         return MoreObjects
                 .toStringHelper(this)
-                .add("name",name)
+                .add("name", name)
                 .toString();
     }
 }

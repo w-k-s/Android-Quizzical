@@ -9,14 +9,13 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by Waqqas on 02/07/15.
  */
 @Root
-public class Categories implements Parcelable{
+public class Categories implements Parcelable {
 
     public static final Parcelable.Creator<Categories> CREATOR
             = new Parcelable.Creator<Categories>() {
@@ -29,22 +28,22 @@ public class Categories implements Parcelable{
         }
     };
 
-    @ElementList(inline = true,entry = "Category")
+    @ElementList(inline = true, entry = "Category")
     private List<Category> categories;
 
-    private Categories(){
+    private Categories() {
         this.categories = new ArrayList<Category>();
     }
 
-    public Categories(List<Category> categories){
+    public Categories(List<Category> categories) {
         this.categories = categories;
     }
 
-    public Categories(Parcel in){
+    public Categories(Parcel in) {
         categories = in.readArrayList(Categories.class.getClassLoader());
     }
 
-    public List<Category> getCategories(){
+    public List<Category> getCategories() {
         return categories;
     }
 
@@ -62,7 +61,7 @@ public class Categories implements Parcelable{
     public String toString() {
         return MoreObjects
                 .toStringHelper(this)
-                .add("categories",categories)
+                .add("categories", categories)
                 .toString();
     }
 }

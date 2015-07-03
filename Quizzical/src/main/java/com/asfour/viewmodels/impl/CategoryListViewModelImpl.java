@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -16,8 +15,6 @@ import com.asfour.R;
 import com.asfour.models.Categories;
 import com.asfour.models.Category;
 import com.asfour.viewmodels.CategoryListViewModel;
-
-import java.util.Collections;
 
 /**
  * Created by Waqqas on 02/07/15.
@@ -35,7 +32,7 @@ public class CategoryListViewModelImpl implements CategoryListViewModel {
     private ListView mCategoriesListView;
     private OnCategorySelectedListener mCategorySelectedListener;
 
-    public CategoryListViewModelImpl(final Context context, final View view){
+    public CategoryListViewModelImpl(final Context context, final View view) {
 
         this.mContext = context;
         this.mView = view;
@@ -43,7 +40,7 @@ public class CategoryListViewModelImpl implements CategoryListViewModel {
         initViews();
     }
 
-    private void initViews(){
+    private void initViews() {
 
         mTitleTextView = (TextView) mView.findViewById(R.id.textview_title);
         mProgressLayout = (LinearLayout) mView.findViewById(R.id.layout_progress);
@@ -51,7 +48,7 @@ public class CategoryListViewModelImpl implements CategoryListViewModel {
         mProgressMessage = (TextView) mView.findViewById(R.id.textview_progress_message);
 
         mTitleTextView.setTypeface(
-                Typeface.createFromAsset(mContext.getAssets(),"Bender-Inline.otf")
+                Typeface.createFromAsset(mContext.getAssets(), "Bender-Inline.otf")
         );
         mTitleTextView.setText(mContext.getString(R.string.app_name));
 
@@ -61,7 +58,7 @@ public class CategoryListViewModelImpl implements CategoryListViewModel {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                if (mCategorySelectedListener != null){
+                if (mCategorySelectedListener != null) {
                     final Category category = (Category) adapterView.getAdapter().getItem(i);
                     mCategorySelectedListener.onCategorySelected(category);
                 }
@@ -98,12 +95,12 @@ public class CategoryListViewModelImpl implements CategoryListViewModel {
         mCategoriesListView.setAdapter(new ArrayAdapter<Category>(
                 mContext,
                 android.R.layout.simple_list_item_1,
-                categories.getCategories()){
+                categories.getCategories()) {
 
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
 
-                View view = super.getView(position,convertView,parent);
+                View view = super.getView(position, convertView, parent);
 
                 TextView tv = ((TextView) view.findViewById(android.R.id.text1));
                 tv.setText(getItem(position).getName());

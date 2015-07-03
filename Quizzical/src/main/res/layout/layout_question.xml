@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="#404040"
     android:orientation="vertical"
-    android:weightSum="100" >
+    android:weightSum="100">
 
     <TextView
         android:id="@+id/tv_question"
@@ -17,38 +17,34 @@
         android:textSize="15dip"
         android:gravity="center"
         android:tag="tv_question"
-        android:scrollbars="vertical"/>
+        android:scrollbars="vertical" />
 
     <Button
         android:id="@+id/btn_A"
         style="@style/quiz_button"
         android:layout_width="fill_parent"
         android:layout_weight="5"
-        android:tag="btn_A"
-        />
+        android:tag="btn_A" />
 
     <Button
         android:id="@+id/btn_B"
         style="@style/quiz_button"
         android:layout_width="fill_parent"
         android:layout_weight="5"
-        android:tag="btn_B"
-         />
+        android:tag="btn_B" />
 
     <Button
         android:id="@+id/btn_C"
         style="@style/quiz_button"
         android:layout_width="fill_parent"
         android:layout_weight="5"
-        android:tag="btn_C"
-         />
+        android:tag="btn_C" />
 
     <Button
         android:id="@+id/btn_D"
         style="@style/quiz_button"
         android:layout_width="fill_parent"
         android:layout_weight="5"
-        android:tag="btn_D"
-         />
+        android:tag="btn_D" />
 
 </LinearLayout>

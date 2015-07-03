@@ -20,7 +20,7 @@ public class QuizzicalService {
     private static com.asfour.services.QuizzicalService mInstance;
     private QuizzicalApi mQuizzicalApi;
 
-    private QuizzicalService(final Context context){
+    private QuizzicalService(final Context context) {
         Preconditions.checkNotNull(context);
 
         OkHttpClient okClient = ((com.asfour.application.App) context.getApplicationContext()).getOkHttpClent();
@@ -35,12 +35,12 @@ public class QuizzicalService {
         mQuizzicalApi = mRestAdapter.create(QuizzicalApi.class);
     }
 
-    public static QuizzicalApi getApi(final Context context){
+    public static QuizzicalApi getApi(final Context context) {
         Preconditions.checkNotNull(context);
 
-        if (mInstance == null){
-            synchronized (com.asfour.services.QuizzicalService.class){
-                if(mInstance == null){
+        if (mInstance == null) {
+            synchronized (com.asfour.services.QuizzicalService.class) {
+                if (mInstance == null) {
                     mInstance = new com.asfour.services.QuizzicalService(context);
                 }
             }
@@ -49,7 +49,7 @@ public class QuizzicalService {
         return mInstance.getQuizzicalApi();
     }
 
-    private QuizzicalApi getQuizzicalApi(){
+    private QuizzicalApi getQuizzicalApi() {
         return mQuizzicalApi;
     }
 

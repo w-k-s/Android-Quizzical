@@ -12,40 +12,37 @@ import com.asfour.viewmodels.impl.ScoreViewModelImpl;
 
 /**
  * Displays the users score as a percentage.
- * 
+ *
  * @author Waqqas
- * 
  */
-public class ScoreActivity extends Activity
-{
-	private ScoreViewModel mScoreViewModel;
-	private QuizScore mQuizScore;
+public class ScoreActivity extends Activity {
+    private ScoreViewModel mScoreViewModel;
+    private QuizScore mQuizScore;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-		super.onCreate(savedInstanceState);
-		this.setContentView(R.layout.layout_score);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.setContentView(R.layout.layout_score);
 
-		if (savedInstanceState != null){
-			mQuizScore = savedInstanceState.getParcelable(App.Extras.Score);
-		}else if(getIntent().getExtras() != null){
-			mQuizScore = getIntent().getExtras().getParcelable(App.Extras.Score);
-		}
+        if (savedInstanceState != null) {
+            mQuizScore = savedInstanceState.getParcelable(App.Extras.Score);
+        } else if (getIntent().getExtras() != null) {
+            mQuizScore = getIntent().getExtras().getParcelable(App.Extras.Score);
+        }
 
-		if (mQuizScore == null){
-			finish();
-		}else{
-			mScoreViewModel = new ScoreViewModelImpl(this,findViewById(android.R.id.content));
-			mScoreViewModel.showScore(mQuizScore);
-		}
+        if (mQuizScore == null) {
+            finish();
+        } else {
+            mScoreViewModel = new ScoreViewModelImpl(this, findViewById(android.R.id.content));
+            mScoreViewModel.showScore(mQuizScore);
+        }
 
     }
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-		outState.putParcelable(App.Extras.Score,mQuizScore);
-	}
+        outState.putParcelable(App.Extras.Score, mQuizScore);
+    }
 }

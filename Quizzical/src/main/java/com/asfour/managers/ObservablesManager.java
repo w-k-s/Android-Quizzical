@@ -11,18 +11,18 @@ import rx.Observable;
 public class ObservablesManager {
 
     private static ObservablesManager mInstance;
-    private Map<String,Observable> mObservablesCache;
+    private Map<String, Observable> mObservablesCache;
 
-    private ObservablesManager(){
+    private ObservablesManager() {
         mObservablesCache = new HashMap<String, Observable>();
     }
 
-    public static ObservablesManager getInstance(){
+    public static ObservablesManager getInstance() {
 
-        if ( mInstance == null ){
+        if (mInstance == null) {
 
-            synchronized(ObservablesManager.class){
-                if (mInstance == null){
+            synchronized (ObservablesManager.class) {
+                if (mInstance == null) {
                     mInstance = new ObservablesManager();
                 }
             }
@@ -32,19 +32,19 @@ public class ObservablesManager {
         return mInstance;
     }
 
-    public Observable cacheObservable(final String key, final Observable observable){
-        return mObservablesCache.put(key,observable);
+    public Observable cacheObservable(final String key, final Observable observable) {
+        return mObservablesCache.put(key, observable);
     }
 
-    public Observable getObservable(final String key){
+    public Observable getObservable(final String key) {
         return mObservablesCache.get(key);
     }
 
-    public boolean contains(final String key){
+    public boolean contains(final String key) {
         return mObservablesCache.containsKey(key);
     }
 
-    public void clear(){
+    public void clear() {
         mObservablesCache.clear();
     }
 }

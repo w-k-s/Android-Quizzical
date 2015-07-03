@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,7 +15,7 @@ import com.asfour.viewmodels.QuizViewModel;
 /**
  * Created by Waqqas on 03/07/15.
  */
-public class QuizViewModelImpl implements QuizViewModel{
+public class QuizViewModelImpl implements QuizViewModel {
 
     private Context mContext;
     private View mView;
@@ -30,7 +29,7 @@ public class QuizViewModelImpl implements QuizViewModel{
     private ProgressDialog mProgressDialog;
     private AlertDialog mAlertDialog;
 
-    private View.OnClickListener mOptionSelectedListener = new View.OnClickListener(){
+    private View.OnClickListener mOptionSelectedListener = new View.OnClickListener() {
 
         @Override
         public void onClick(View view) {
@@ -43,7 +42,7 @@ public class QuizViewModelImpl implements QuizViewModel{
     };
 
     public QuizViewModelImpl(final Context context,
-                             final View view){
+                             final View view) {
 
         mContext = context;
         mView = view;
@@ -51,7 +50,7 @@ public class QuizViewModelImpl implements QuizViewModel{
         initViews();
     }
 
-    private void initViews(){
+    private void initViews() {
 
         mQuestionTextView = (TextView) mView.findViewById(R.id.tv_question);
 
@@ -60,30 +59,30 @@ public class QuizViewModelImpl implements QuizViewModel{
         mOptionCButton = (Button) mView.findViewById(R.id.btn_C);
         mOptionDButton = (Button) mView.findViewById(R.id.btn_D);
 
-        mOptionButtons = new Button[]{mOptionAButton,mOptionBButton,mOptionCButton,mOptionDButton};
+        mOptionButtons = new Button[]{mOptionAButton, mOptionBButton, mOptionCButton, mOptionDButton};
 
-        for (Button button : mOptionButtons){
+        for (Button button : mOptionButtons) {
             button.setOnClickListener(mOptionSelectedListener);
         }
     }
 
-    private View getViewForAnswer(String answer){
-        if (answer.equals(Question.OPTION_A)){
+    private View getViewForAnswer(String answer) {
+        if (answer.equals(Question.OPTION_A)) {
             return mOptionAButton;
-        }else if(answer.equals(Question.OPTION_B)){
+        } else if (answer.equals(Question.OPTION_B)) {
             return mOptionBButton;
-        }else if(answer.equals(Question.OPTION_C)){
+        } else if (answer.equals(Question.OPTION_C)) {
             return mOptionCButton;
-        }else if(answer.equals(Question.OPTION_D)){
+        } else if (answer.equals(Question.OPTION_D)) {
             return mOptionDButton;
-        }else{
+        } else {
             return null;
         }
     }
 
-    private String getAnswerFromView(View view){
+    private String getAnswerFromView(View view) {
 
-        switch(view.getId()){
+        switch (view.getId()) {
             case R.id.btn_A:
                 return Question.OPTION_A;
 
@@ -98,7 +97,7 @@ public class QuizViewModelImpl implements QuizViewModel{
 
             default:
                 throw new IllegalStateException(
-                        String.format("Answer can not be determined for view: %s",view.getTag())
+                        String.format("Answer can not be determined for view: %s", view.getTag())
                 );
         }
 
@@ -119,15 +118,15 @@ public class QuizViewModelImpl implements QuizViewModel{
 
     }
 
-    private void highlightButtonWithAnswer(String answer, int color){
+    private void highlightButtonWithAnswer(String answer, int color) {
 
         Button answerButton = (Button) getViewForAnswer(answer);
-        if (answerButton != null){
-            highlightButton(answerButton,color);
+        if (answerButton != null) {
+            highlightButton(answerButton, color);
         }
     }
 
-    private void highlightButton(Button button, int color){
+    private void highlightButton(Button button, int color) {
         assert button != null;
         assert color > 0;
 
@@ -141,8 +140,8 @@ public class QuizViewModelImpl implements QuizViewModel{
         toggleAnswerButtonsEnabled(false);
 
         highlightButtonWithAnswer(correct, mContext.getResources().getColor(R.color.green));
-        if(!correct.equals(userAnswer)){
-            highlightButtonWithAnswer(userAnswer,mContext.getResources().getColor(R.color.red));
+        if (!correct.equals(userAnswer)) {
+            highlightButtonWithAnswer(userAnswer, mContext.getResources().getColor(R.color.red));
         }
     }
 
@@ -169,7 +168,7 @@ public class QuizViewModelImpl implements QuizViewModel{
 
     @Override
     public void dismissProgress() {
-        if (mProgressDialog != null){
+        if (mProgressDialog != null) {
             mProgressDialog.dismiss();
             mProgressDialog = null;
         }
@@ -180,12 +179,12 @@ public class QuizViewModelImpl implements QuizViewModel{
 
         dismissDownlaodErrorDialog();
 
-        if (mAlertDialog == null){
+        if (mAlertDialog == null) {
             mAlertDialog = new AlertDialog.Builder(mContext)
                     .setTitle(null)
                     .setMessage(error)
                     .setCancelable(false)
-                    .setPositiveButton(mContext.getString(android.R.string.ok),listener)
+                    .setPositiveButton(mContext.getString(android.R.string.ok), listener)
                     .create();
         }
 
@@ -194,7 +193,7 @@ public class QuizViewModelImpl implements QuizViewModel{
 
     @Override
     public void dismissDownlaodErrorDialog() {
-        if (mAlertDialog != null){
+        if (mAlertDialog != null) {
             mAlertDialog.dismiss();
             mAlertDialog = null;
         }
@@ -202,16 +201,16 @@ public class QuizViewModelImpl implements QuizViewModel{
 
     private void toggleAnswerButtonsEnabled(boolean enable) {
 
-        for(Button button : mOptionButtons){
+        for (Button button : mOptionButtons) {
             button.setEnabled(enable);
         }
     }
 
-    private void setButtonTextColor(int color){
+    private void setButtonTextColor(int color) {
 
         assert color > 0;
 
-        for (Button button :mOptionButtons){
+        for (Button button : mOptionButtons) {
             button.setTextColor(color);
         }
 

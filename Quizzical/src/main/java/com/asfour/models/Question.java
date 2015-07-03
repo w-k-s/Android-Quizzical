@@ -9,20 +9,13 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Multiple Choice Question Objects.
- * 
+ *
  * @author Waqqas
- * 
  */
 @Root
-public class Question implements Parcelable
-{
+public class Question implements Parcelable {
     public static final Parcelable.Creator<Question> CREATOR
             = new Parcelable.Creator<Question>() {
         public Question createFromParcel(Parcel in) {
@@ -57,17 +50,16 @@ public class Question implements Parcelable
     @Element(name = "D")
     private String d;
 
-    private Question(){
-        this("","","","","","");
+    private Question() {
+        this("", "", "", "", "", "");
     }
 
-    public Question( String text,
-                     String a,
-                     String b,
-                     String c,
-                     String d,
-                     String answer)
-    {
+    public Question(String text,
+                    String a,
+                    String b,
+                    String c,
+                    String d,
+                    String answer) {
         this.text = text;
         this.a = a;
         this.b = b;
@@ -77,7 +69,7 @@ public class Question implements Parcelable
 
     }
 
-    public Question(Parcel in){
+    public Question(Parcel in) {
 
         this.text = in.readString();
         this.a = in.readString();
@@ -112,10 +104,9 @@ public class Question implements Parcelable
         return d;
     }
 
-    public boolean checkAnswer(String answer){
+    public boolean checkAnswer(String answer) {
         return this.answer.equalsIgnoreCase(answer);
     }
-    
 
 
     @Override
@@ -138,12 +129,12 @@ public class Question implements Parcelable
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("text",text)
-                .add("answer",answer)
-                .add("a",a)
-                .add("b",b)
-                .add("c",c)
-                .add("d",d)
+                .add("text", text)
+                .add("answer", answer)
+                .add("a", a)
+                .add("b", b)
+                .add("c", c)
+                .add("d", d)
                 .toString();
     }
 }

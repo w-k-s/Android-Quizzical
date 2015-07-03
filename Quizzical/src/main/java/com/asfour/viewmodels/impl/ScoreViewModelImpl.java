@@ -27,7 +27,7 @@ public class ScoreViewModelImpl implements ScoreViewModel {
     private TextView mGradeTextView;
     private int[] mColors;
 
-    public ScoreViewModelImpl(Context context, View view){
+    public ScoreViewModelImpl(Context context, View view) {
         mContext = context;
         mView = view;
 
@@ -36,7 +36,7 @@ public class ScoreViewModelImpl implements ScoreViewModel {
         initViews();
     }
 
-    private void initViews(){
+    private void initViews() {
 
         mHeadingTextView = (TextView) mView.findViewById(R.id.textview_score_heading);
         mScoreTextView = (TextView) mView.findViewById(R.id.textview_score);
@@ -61,22 +61,19 @@ public class ScoreViewModelImpl implements ScoreViewModel {
         animateScore.start();
     }
 
-    public class ScoreAnimation extends CountDownTimer
-    {
+    public class ScoreAnimation extends CountDownTimer {
         private static final int MAX_PERCENTAGE = 100;
         private int counter = 0;
         private QuizScore mQuizScore;
 
-        public ScoreAnimation( QuizScore score, long millisInFuture,
-                              long countDownInterval)
-        {
+        public ScoreAnimation(QuizScore score, long millisInFuture,
+                              long countDownInterval) {
             super(millisInFuture, countDownInterval);
             this.mQuizScore = score;
         }
 
         @Override
-        public void onFinish()
-        {
+        public void onFinish() {
 
             mGradeTextView.setText(String.format("[ %s ]", mQuizScore.getGrade()));
             mGradeTextView.setVisibility(View.VISIBLE);
@@ -88,11 +85,10 @@ public class ScoreViewModelImpl implements ScoreViewModel {
          * Increments a counter from 0 to earned percentage Sets textview to
          * display counter. Maps percentage to colour and comment
          */
-        public void onTick(long millisUntilFinished)
-        {
+        public void onTick(long millisUntilFinished) {
             // map percentage to colour.
-            if(counter <= (int)mQuizScore.getPercentage()){
-                mScoreTextView.setTextColor(mColors[counter / (MAX_PERCENTAGE/(mColors.length - 1))]);
+            if (counter <= (int) mQuizScore.getPercentage()) {
+                mScoreTextView.setTextColor(mColors[counter / (MAX_PERCENTAGE / (mColors.length - 1))]);
                 mScoreTextView.setText("" + counter + "%");
                 counter++;
 

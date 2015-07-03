@@ -13,7 +13,7 @@ public class BaseActivity extends Activity {
 
     protected CompositeSubscription mCompositeSubscription;
 
-    public BaseActivity(){
+    public BaseActivity() {
         super();
 
         mCompositeSubscription = new CompositeSubscription();
