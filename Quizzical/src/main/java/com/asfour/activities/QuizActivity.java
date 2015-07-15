@@ -7,15 +7,17 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.asfour.R;
+import com.asfour.api.QuizzicalApi;
 import com.asfour.application.App;
 import com.asfour.managers.ObservablesManager;
 import com.asfour.models.Category;
 import com.asfour.models.Question;
 import com.asfour.models.Questions;
 import com.asfour.models.Quiz;
-import com.asfour.services.QuizzicalService;
 import com.asfour.viewmodels.QuizViewModel;
 import com.asfour.viewmodels.impl.QuizViewModelImpl;
+
+import javax.inject.Inject;
 
 import rx.Observable;
 import rx.android.app.AppObservable;
@@ -36,11 +38,15 @@ public class QuizActivity extends BaseActivity implements QuizViewModel.OnAnswer
     private Quiz mQuiz;
     private Category mCategory;
 
+    @Inject
+    public QuizzicalApi mQuizzicalApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_question);
+
+        App.component().inject(this);
 
         if (savedInstanceState != null) {
 
@@ -104,7 +110,7 @@ public class QuizActivity extends BaseActivity implements QuizViewModel.OnAnswer
         if (ObservablesManager.getInstance().contains(App.Observables.Questions)) {
             observable = ObservablesManager.getInstance().getObservable(App.Observables.Questions);
         } else {
-            observable = QuizzicalService.getApi(this).getQuestions(mCategory.getName()).cache();
+            observable = mQuizzicalApi.getQuestions(mCategory.getName()).cache();
             ObservablesManager.getInstance().cacheObservable(App.Observables.Questions, observable);
         }
 

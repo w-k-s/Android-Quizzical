@@ -1,14 +1,12 @@
 package com.asfour.application;
 
 import android.app.Application;
-import android.util.Log;
 
+import com.asfour.component.AppComponent;
+import com.asfour.component.DaggerAppComponent;
+import com.asfour.modules.ApiModule;
+import com.asfour.modules.AppModule;
 import com.asfour.utils.FontsOverride;
-import com.squareup.okhttp.Cache;
-import com.squareup.okhttp.OkHttpClient;
-
-import java.io.File;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Waqqas on 30/06/15.
@@ -29,22 +27,14 @@ public class App extends Application {
     }
 
     private static final String TAG = App.class.getSimpleName();
-    private static final long CONNECTION_TIMEOUT_MILLIS = 2 * 60 * 1000;//2 minutes
-    private static final String CACHE_DIR_NAME = "http-cache";
-    private static final long CACHE_SIZE = 5 * 1024 * 1024; // 5 MB Cache
-
-    private OkHttpClient mClient;
+    private static AppComponent mAppComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         setFontsOverride();
-        configureOkHttpClient();
-    }
-
-    public final OkHttpClient getOkHttpClent() {
-        return mClient;
+        initializeDagger();
     }
 
     public void setFontsOverride() {
@@ -54,17 +44,15 @@ public class App extends Application {
         FontsOverride.setDefaultFont(this, "SANS_SERIF", "ArchitectsDaughter.ttf");
     }
 
-    private final void configureOkHttpClient() {
+    private void initializeDagger(){
+        mAppComponent = DaggerAppComponent
+                .builder()
+                .appModule(new AppModule(this))
+                .apiModule(new ApiModule())
+                .build();
+    }
 
-        mClient = new OkHttpClient();
-        mClient.setConnectTimeout(CONNECTION_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
-
-        try {
-            File cacheDir = new File(getCacheDir(), CACHE_DIR_NAME);
-            Cache cache = new Cache(cacheDir, CACHE_SIZE);
-            mClient.setCache(cache);
-        } catch (Exception e) {
-            Log.e(TAG, "Cahce directory could not be set", e);
-        }
+    public static AppComponent component(){
+        return mAppComponent;
     }
 }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.asfour.R;
+import com.asfour.api.QuizzicalApi;
 import com.asfour.application.App;
 import com.asfour.managers.ObservablesManager;
 import com.asfour.models.Categories;
@@ -13,6 +14,9 @@ import com.asfour.viewmodels.CategoryListViewModel;
 import com.asfour.viewmodels.CategoryListViewModel.OnCategorySelectedListener;
 import com.asfour.viewmodels.impl.CategoryListViewModelImpl;
 
+import javax.inject.Inject;
+
+import retrofit.RestAdapter;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -25,11 +29,15 @@ import rx.functions.Action1;
  * @author Waqqas
  */
 public class CategoryListActivity extends BaseActivity {
+
     static final String TAG = CategoryListActivity.class.getSimpleName();
 
     private CategoryListViewModel mCategoryListViewModel;
     private Categories mCategories;
     private Subscription mCategoriesSubscription;
+
+    @Inject
+    public QuizzicalApi mQuizzicalApi;
 
     private OnCategorySelectedListener mCategorySelectedListener = new OnCategorySelectedListener() {
 
@@ -47,8 +55,11 @@ public class CategoryListActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_category_list);
+
+        App.component().inject(this);
 
         if (savedInstanceState != null) {
             mCategories = savedInstanceState.getParcelable(App.Extras.Categories);
@@ -82,7 +93,7 @@ public class CategoryListActivity extends BaseActivity {
         if (ObservablesManager.getInstance().contains(App.Observables.Categories)) {
             observable = ObservablesManager.getInstance().getObservable(App.Observables.Categories);
         } else {
-            observable = QuizzicalService.getApi(this).getCategories().cache();
+            observable = mQuizzicalApi.getCategories().cache();
             ObservablesManager.getInstance().cacheObservable(App.Observables.Categories, observable);
         }
 
