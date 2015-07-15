@@ -32,10 +32,10 @@ public class Question implements Parcelable {
     public static final String OPTION_C = "C";
     public static final String OPTION_D = "D";
 
-    @Element(name = "Text")
+    @Element(name = "ask")
     private String text;
 
-    @Attribute(name = "answer")
+    @Attribute(name = "correct")
     private String answer;
 
     @Element(name = "A")

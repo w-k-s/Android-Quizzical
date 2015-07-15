@@ -14,6 +14,8 @@ import com.asfour.viewmodels.CategoryListViewModel.OnCategorySelectedListener;
 import com.asfour.viewmodels.impl.CategoryListViewModelImpl;
 
 import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.android.app.AppObservable;
 import rx.functions.Action1;
 
@@ -27,13 +29,14 @@ public class CategoryListActivity extends BaseActivity {
 
     private CategoryListViewModel mCategoryListViewModel;
     private Categories mCategories;
+    private Subscription mCategoriesSubscription;
 
     private OnCategorySelectedListener mCategorySelectedListener = new OnCategorySelectedListener() {
 
         @Override
         public void onCategorySelected(Category category) {
 
-            Intent intent = new Intent(CategoryListActivity.this, QuestionActivity.class);
+            Intent intent = new Intent(CategoryListActivity.this, QuizActivity.class);
             intent.putExtra(App.Extras.Category, category);
 
             startActivity(intent);
@@ -84,32 +87,30 @@ public class CategoryListActivity extends BaseActivity {
         }
 
         mCategoryListViewModel.showProgressbar();
-        mCompositeSubscription.add(AppObservable.bindActivity(this, observable)
-                .subscribe(new Action1<Categories>() {
+        mCategoriesSubscription = AppObservable.bindActivity(this, observable)
+                        .subscribe(new Action1<Categories>() {
 
-                    @Override
-                    public void call(Categories categories) {
+                            @Override
+                            public void call(Categories categories) {
 
-                        mCategories = categories;
-                        mCategoryListViewModel.hideProgressbar();
-                        mCategoryListViewModel.showCategories(categories);
+                                mCategories = categories;
+                                mCategoryListViewModel.hideProgressbar();
+                                mCategoryListViewModel.showCategories(categories);
+                                mCompositeSubscription.remove(mCategoriesSubscription);
+                            }
 
-                    }
+                        }, new Action1<Throwable>() {
 
-                }, new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
 
-                    @Override
-                    public void call(Throwable throwable) {
+                                mCategoryListViewModel.hideProgressbar();
+                                mCategoryListViewModel.showError(getString(R.string.err_fetching_categories));
+                                mCompositeSubscription.remove(mCategoriesSubscription);
 
-                        mCategoryListViewModel.hideProgressbar();
-                        mCategoryListViewModel.showError(getString(R.string.err_fetching_categories));
+                            }
 
-                    }
-
-                }));
-
-
+                        });
+        mCompositeSubscription.add(mCategoriesSubscription);
     }
-
-
 }

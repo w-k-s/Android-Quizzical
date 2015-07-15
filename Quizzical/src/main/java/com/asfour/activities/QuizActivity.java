@@ -27,10 +27,10 @@ import rx.functions.Action1;
  *
  * @author Waqqas
  */
-public class QuestionActivity extends BaseActivity implements QuizViewModel.OnAnswerSelectedListener {
+public class QuizActivity extends BaseActivity implements QuizViewModel.OnAnswerSelectedListener {
 
     private static final long QUESTION_TRANSITION_PAUSE = 750;
-    private static final String TAG = QuestionActivity.class.getSimpleName();
+    private static final String TAG = QuizActivity.class.getSimpleName();
 
     private QuizViewModel mQuizViewModel;
     private Quiz mQuiz;
@@ -169,7 +169,7 @@ public class QuestionActivity extends BaseActivity implements QuizViewModel.OnAn
 
                 } else {
 
-                    Intent intent = new Intent(QuestionActivity.this, ScoreActivity.class);
+                    Intent intent = new Intent(QuizActivity.this, ScoreActivity.class);
                     intent.putExtra(App.Extras.Score, mQuiz.getScore());
 
                     startActivity(intent);

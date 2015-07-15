@@ -24,6 +24,6 @@ public class BaseActivity extends Activity {
         super.onDestroy();
 
         ObservablesManager.getInstance().clear();
-        mCompositeSubscription.clear();
+        mCompositeSubscription.unsubscribe();
     }
 }

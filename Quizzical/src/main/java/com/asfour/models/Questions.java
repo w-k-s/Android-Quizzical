@@ -28,7 +28,7 @@ public class Questions implements Parcelable {
         }
     };
 
-    @ElementList(inline = true, entry = "Question")
+    @ElementList(inline = true, entry = "question")
     private List<Question> questions;
 
     private Questions() {

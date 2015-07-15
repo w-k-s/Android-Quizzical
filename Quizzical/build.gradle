@@ -31,10 +31,10 @@ configurations {
 dependencies {
     compile 'com.android.support:support-v4:22.0.0'
     compile 'org.simpleframework:simple-xml:2.7.+'
-    compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.mobprofs:retrofit-simplexmlconverter:1.1'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'io.reactivex:rxandroid:0.25.0'
     compile 'com.google.guava:guava:18.0'
+    compile 'de.greenrobot:eventbus:3.0.0-beta1'
 }
