@@ -24,7 +24,8 @@ import rx.android.app.AppObservable;
 import rx.functions.Action1;
 
 /**
- * Downloads categories, displays them to the user as a list.
+ * An activity that displays a list of quiz activities.
+ * Clicking on a category navigates to {@link QuizActivity}, where the quiz questions are presented.
  *
  * @author Waqqas
  */
