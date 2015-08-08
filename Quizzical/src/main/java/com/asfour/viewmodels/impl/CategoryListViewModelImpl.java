@@ -12,9 +12,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.asfour.R;
+import com.asfour.application.Configuration;
 import com.asfour.models.Categories;
 import com.asfour.models.Category;
+import com.asfour.utils.AdMobUtils;
 import com.asfour.viewmodels.CategoryListViewModel;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 /**
  * Created by Waqqas on 02/07/15.
@@ -23,6 +27,7 @@ public class CategoryListViewModelImpl implements CategoryListViewModel {
 
     private Context mContext;
     private View mView;
+    private Configuration mConfig;
 
     private LinearLayout mProgressLayout;
     private ProgressBar mProgressBar;
@@ -32,10 +37,13 @@ public class CategoryListViewModelImpl implements CategoryListViewModel {
     private ListView mCategoriesListView;
     private OnCategorySelectedListener mCategorySelectedListener;
 
-    public CategoryListViewModelImpl(final Context context, final View view) {
+    public CategoryListViewModelImpl(final Context context,
+                                     final View view,
+                                     final Configuration configuration) {
 
         this.mContext = context;
         this.mView = view;
+        this.mConfig = configuration;
 
         initViews();
     }
@@ -66,6 +74,8 @@ public class CategoryListViewModelImpl implements CategoryListViewModel {
             }
 
         });
+
+        loadAdsIfConfigured();
     }
 
     @Override
@@ -116,4 +126,12 @@ public class CategoryListViewModelImpl implements CategoryListViewModel {
         mCategorySelectedListener = listener;
     }
 
+    public void loadAdsIfConfigured() {
+        if (mConfig.isShowAds()) {
+            AdView adView = (AdView) mView.findViewById(R.id.ad_view);
+            AdRequest adRequest = AdMobUtils.newAdRequestBuilder().build();
+
+            adView.loadAd(adRequest);
+        }
+    }
 }

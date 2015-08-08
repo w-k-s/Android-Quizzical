@@ -14,7 +14,7 @@ import org.simpleframework.xml.Root;
  *
  * @author Waqqas
  */
-@Root
+@Root(strict = false)
 public class Question implements Parcelable {
     public static final Parcelable.Creator<Question> CREATOR
             = new Parcelable.Creator<Question>() {

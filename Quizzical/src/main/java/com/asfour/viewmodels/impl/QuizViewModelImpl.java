@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.asfour.R;
+import com.asfour.application.Configuration;
 import com.asfour.models.Question;
 import com.asfour.viewmodels.QuizViewModel;
 
@@ -19,6 +20,7 @@ public class QuizViewModelImpl implements QuizViewModel {
 
     private Context mContext;
     private View mView;
+    private Configuration mConfig;
 
     private OnAnswerSelectedListener mAnswerSelectedListener;
 
@@ -42,10 +44,12 @@ public class QuizViewModelImpl implements QuizViewModel {
     };
 
     public QuizViewModelImpl(final Context context,
-                             final View view) {
+                             final View view,
+                             final Configuration configuration) {
 
         mContext = context;
         mView = view;
+        mConfig = configuration;
 
         initViews();
     }

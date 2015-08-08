@@ -1,6 +1,7 @@
 package com.asfour.modules;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.asfour.application.App;
 
@@ -25,5 +26,11 @@ public class AppModule {
     @Singleton
     Application provideApplication(){
         return mApp;
+    }
+
+    @Provides
+    @Singleton
+    Context provideApplicationContext() {
+        return mApp.getApplicationContext();
     }
 }

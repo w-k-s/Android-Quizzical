@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="num_questions_per_quiz">15</integer>
+    <integer name="delay_before_next_question">750</integer>
+    <integer name="delay_before_displaying_interstitial_ads">1000</integer>
+    <integer name="splash_screen_duration">2000</integer>
+    <bool name="show_ads">true</bool>
+</resources>

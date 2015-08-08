@@ -6,6 +6,7 @@ import com.asfour.component.AppComponent;
 import com.asfour.component.DaggerAppComponent;
 import com.asfour.modules.ApiModule;
 import com.asfour.modules.AppModule;
+import com.asfour.modules.ConfigModule;
 import com.asfour.utils.FontsOverride;
 
 /**
@@ -48,6 +49,7 @@ public class App extends Application {
         mAppComponent = DaggerAppComponent
                 .builder()
                 .appModule(new AppModule(this))
+                .configModule(new ConfigModule())
                 .apiModule(new ApiModule())
                 .build();
     }

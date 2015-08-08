@@ -5,20 +5,19 @@ import android.os.Bundle;
 
 import com.asfour.R;
 import com.asfour.api.QuizzicalApi;
+import com.asfour.api.params.CategoryParams;
 import com.asfour.application.App;
+import com.asfour.application.Configuration;
 import com.asfour.managers.ObservablesManager;
 import com.asfour.models.Categories;
 import com.asfour.models.Category;
-import com.asfour.services.QuizzicalService;
 import com.asfour.viewmodels.CategoryListViewModel;
 import com.asfour.viewmodels.CategoryListViewModel.OnCategorySelectedListener;
 import com.asfour.viewmodels.impl.CategoryListViewModelImpl;
 
 import javax.inject.Inject;
 
-import retrofit.RestAdapter;
 import rx.Observable;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.android.app.AppObservable;
 import rx.functions.Action1;
@@ -39,6 +38,9 @@ public class CategoryListActivity extends BaseActivity {
 
     @Inject
     public QuizzicalApi mQuizzicalApi;
+
+    @Inject
+    public Configuration mConfig;
 
     private OnCategorySelectedListener mCategorySelectedListener = new OnCategorySelectedListener() {
 
@@ -66,7 +68,7 @@ public class CategoryListActivity extends BaseActivity {
             mCategories = savedInstanceState.getParcelable(App.Extras.Categories);
         }
 
-        mCategoryListViewModel = new CategoryListViewModelImpl(this, findViewById(android.R.id.content));
+        mCategoryListViewModel = new CategoryListViewModelImpl(this, findViewById(android.R.id.content), mConfig);
         mCategoryListViewModel.setOnCategorySelectedListener(mCategorySelectedListener);
     }
 
@@ -94,7 +96,7 @@ public class CategoryListActivity extends BaseActivity {
         if (ObservablesManager.getInstance().contains(App.Observables.Categories)) {
             observable = ObservablesManager.getInstance().getObservable(App.Observables.Categories);
         } else {
-            observable = mQuizzicalApi.getCategories().cache();
+            observable = mQuizzicalApi.getCategories(new CategoryParams(this)).cache();
             ObservablesManager.getInstance().cacheObservable(App.Observables.Categories, observable);
         }
 

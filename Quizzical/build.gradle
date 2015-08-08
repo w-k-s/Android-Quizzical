@@ -25,12 +25,26 @@ repositories {
 }
 
 configurations {
+
     compile.exclude module: 'stax'
     compile.exclude module: 'stax-api'
     compile.exclude module: 'xpp3'
 }
 
 dependencies {
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.0.5-beta'
+    testCompile 'com.android.support:support-v4:22.0.0'
+    testCompile('org.powermock:powermock-api-mockito:1.6.2') {
+        exclude module: 'hamcrest-core'
+        exclude module: 'objenesis'
+    }
+    testCompile('org.powermock:powermock-module-junit4:1.6.2') {
+        exclude module: 'hamcrest-core'
+        exclude module: 'objenesis'
+    }
+
     compile 'com.android.support:support-v4:22.0.0'
     compile 'org.simpleframework:simple-xml:2.7.+'
     compile 'com.mobprofs:retrofit-simplexmlconverter:1.1'
@@ -44,4 +58,7 @@ dependencies {
     compile 'javax.annotation:jsr250-api:1.0'
     // Needed specifically for annotations in Java 1.6
     //compile 'org.glassfish:javax.annotation:10.0-b28'
+    compile 'com.google.android.gms:play-services-ads:7.5.0'
+    compile 'com.android.support:support-annotations:22.0.0'
+    compile 'org.bitbucket.b_c:jose4j:0.4.4'
 }

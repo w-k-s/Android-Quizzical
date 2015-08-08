@@ -11,4 +11,6 @@
     <string name="err_no_questions">Questions for this category couldn\'t be loaded.</string>
     <string name="text_select_category">Select a category:</string>
     <string name="text_score_heading">You scored </string>
+    <string name="categories_ad_unit_id">ca-app-pub-3308444089594050/3862254522</string>
+    <string name="score_ad_unit_id">ca-app-pub-3308444089594050/3722653728</string>
 </resources>

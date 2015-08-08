@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by Waqqas on 02/07/15.
  */
-@Root
+@Root(strict = false)
 public class Categories implements Parcelable {
 
     public static final Parcelable.Creator<Categories> CREATOR

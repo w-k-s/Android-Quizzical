@@ -8,7 +8,9 @@ import android.util.Log;
 
 import com.asfour.R;
 import com.asfour.api.QuizzicalApi;
+import com.asfour.api.params.QuestionParams;
 import com.asfour.application.App;
+import com.asfour.application.Configuration;
 import com.asfour.managers.ObservablesManager;
 import com.asfour.models.Category;
 import com.asfour.models.Question;
@@ -31,7 +33,6 @@ import rx.functions.Action1;
  */
 public class QuizActivity extends BaseActivity implements QuizViewModel.OnAnswerSelectedListener {
 
-    private static final long QUESTION_TRANSITION_PAUSE = 750;
     private static final String TAG = QuizActivity.class.getSimpleName();
 
     private QuizViewModel mQuizViewModel;
@@ -40,6 +41,9 @@ public class QuizActivity extends BaseActivity implements QuizViewModel.OnAnswer
 
     @Inject
     public QuizzicalApi mQuizzicalApi;
+
+    @Inject
+    public Configuration mConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +67,7 @@ public class QuizActivity extends BaseActivity implements QuizViewModel.OnAnswer
             finish();
         }
 
-        mQuizViewModel = new QuizViewModelImpl(this, findViewById(android.R.id.content));
+        mQuizViewModel = new QuizViewModelImpl(this, findViewById(android.R.id.content), mConfig);
         mQuizViewModel.setOnAnswerSelectedListener(this);
     }
 
@@ -110,7 +114,12 @@ public class QuizActivity extends BaseActivity implements QuizViewModel.OnAnswer
         if (ObservablesManager.getInstance().contains(App.Observables.Questions)) {
             observable = ObservablesManager.getInstance().getObservable(App.Observables.Questions);
         } else {
-            observable = mQuizzicalApi.getQuestions(mCategory.getName()).cache();
+            observable = mQuizzicalApi.getQuestions(
+                    new QuestionParams(
+                            this, mCategory,
+                            mConfig.getNumQuestionsInQuiz()
+                    )
+            ).cache();
             ObservablesManager.getInstance().cacheObservable(App.Observables.Questions, observable);
         }
 
@@ -183,7 +192,7 @@ public class QuizActivity extends BaseActivity implements QuizViewModel.OnAnswer
                 }
 
             }
-        }, QUESTION_TRANSITION_PAUSE);
+        }, mConfig.getDelayBeforeNextQuestion());
 
     }
 

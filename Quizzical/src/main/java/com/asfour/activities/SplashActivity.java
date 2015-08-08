@@ -16,8 +16,6 @@ import com.asfour.R;
 
 public class SplashActivity extends Activity {
 
-    private static final int SPLASH_DURATION = 3000;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

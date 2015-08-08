@@ -5,9 +5,12 @@ import android.os.Bundle;
 
 import com.asfour.R;
 import com.asfour.application.App;
+import com.asfour.application.Configuration;
 import com.asfour.models.QuizScore;
 import com.asfour.viewmodels.ScoreViewModel;
 import com.asfour.viewmodels.impl.ScoreViewModelImpl;
+
+import javax.inject.Inject;
 
 
 /**
@@ -18,6 +21,9 @@ import com.asfour.viewmodels.impl.ScoreViewModelImpl;
 public class ScoreActivity extends Activity {
     private ScoreViewModel mScoreViewModel;
     private QuizScore mQuizScore;
+
+    @Inject
+    public Configuration mConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +39,7 @@ public class ScoreActivity extends Activity {
         if (mQuizScore == null) {
             finish();
         } else {
-            mScoreViewModel = new ScoreViewModelImpl(this, findViewById(android.R.id.content));
+            mScoreViewModel = new ScoreViewModelImpl(this, findViewById(android.R.id.content), mConfig);
             mScoreViewModel.showScore(mQuizScore);
         }
 

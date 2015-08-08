@@ -1,5 +1,7 @@
 package com.asfour.api;
 
+import com.asfour.api.params.CategoryParams;
+import com.asfour.api.params.QuestionParams;
 import com.asfour.models.Categories;
 import com.asfour.models.Questions;
 
@@ -12,9 +14,10 @@ import rx.Observable;
  */
 public interface QuizzicalApi {
 
-    @GET("/categories?format=xml")
-    public Observable<Categories> getCategories();
 
-    @GET("/questions")
-    public Observable<Questions> getQuestions(@Query("category") final String category);
+    @GET("/api/categories")
+    public Observable<Categories> getCategories(@Query("token") final CategoryParams params);
+
+    @GET("/api/questions")
+    public Observable<Questions> getQuestions(@Query("token") final QuestionParams params);
 }

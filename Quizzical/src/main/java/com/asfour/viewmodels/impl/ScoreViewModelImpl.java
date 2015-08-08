@@ -3,14 +3,19 @@ package com.asfour.viewmodels.impl;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.asfour.R;
+import com.asfour.application.Configuration;
 import com.asfour.models.QuizScore;
+import com.asfour.utils.AdMobUtils;
 import com.asfour.viewmodels.ScoreViewModel;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 
 /**
  * Created by Waqqas on 03/07/15.
@@ -19,19 +24,25 @@ public class ScoreViewModelImpl implements ScoreViewModel {
 
     private Context mContext;
     private View mView;
+    private Configuration mConfig;
 
     private static final long MILLISECONDS_PER_TICK = 50;
+
+    private InterstitialAd mInterstitialAd;
 
     private TextView mHeadingTextView;
     private TextView mScoreTextView;
     private TextView mGradeTextView;
     private int[] mColors;
 
-    public ScoreViewModelImpl(Context context, View view) {
+    public ScoreViewModelImpl(Context context, View view, Configuration configuration) {
         mContext = context;
         mView = view;
+        mConfig = configuration;
 
         mColors = mContext.getResources().getIntArray(R.array.grade_colors);
+
+        loadAdsIfConfigured();
 
         initViews();
     }
@@ -61,6 +72,42 @@ public class ScoreViewModelImpl implements ScoreViewModel {
         animateScore.start();
     }
 
+    private void loadAdsIfConfigured() {
+        if (mConfig.isShowAds()) {
+            mInterstitialAd = new InterstitialAd(mContext);
+            mInterstitialAd.setAdUnitId(mContext.getString(R.string.score_ad_unit_id));
+
+            requestNewInterstitial();
+        }
+    }
+
+    private boolean showAdIfConfiguredAndLoaded() {
+
+        if (mConfig.isShowAds() && mInterstitialAd.isLoaded()) {
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    mInterstitialAd.show();
+
+                }
+            }, mConfig.getDelayBeforeDisplayInterstitialAds());
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private void requestNewInterstitial() {
+        AdRequest adRequest = AdMobUtils.newAdRequestBuilder().build();
+
+        mInterstitialAd.loadAd(adRequest);
+    }
+
     public class ScoreAnimation extends CountDownTimer {
         private static final int MAX_PERCENTAGE = 100;
         private int counter = 0;
@@ -77,7 +124,26 @@ public class ScoreViewModelImpl implements ScoreViewModel {
 
             mGradeTextView.setText(String.format("[ %s ]", mQuizScore.getGrade()));
             mGradeTextView.setVisibility(View.VISIBLE);
+
             Animation scoreAnimation = AnimationUtils.loadAnimation(mContext, R.anim.score);
+            scoreAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+
+                    showAdIfConfiguredAndLoaded();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+
+                }
+            });
+
             mGradeTextView.startAnimation(scoreAnimation);
         }
 

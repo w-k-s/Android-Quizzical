@@ -11,7 +11,7 @@ import org.simpleframework.xml.Root;
 /**
  * Created by Waqqas on 02/07/15.
  */
-@Root
+@Root(strict = false)
 public class Category implements Parcelable {
 
     public static final Parcelable.Creator<Category> CREATOR
