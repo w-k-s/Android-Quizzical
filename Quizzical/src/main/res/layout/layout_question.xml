@@ -21,28 +21,28 @@
 
     <Button
         android:id="@+id/btn_A"
-        style="@style/quiz_button"
+        style="@style/QuizButton"
         android:layout_width="fill_parent"
         android:layout_weight="5"
         android:tag="btn_A" />
 
     <Button
         android:id="@+id/btn_B"
-        style="@style/quiz_button"
+        style="@style/QuizButton"
         android:layout_width="fill_parent"
         android:layout_weight="5"
         android:tag="btn_B" />
 
     <Button
         android:id="@+id/btn_C"
-        style="@style/quiz_button"
+        style="@style/QuizButton"
         android:layout_width="fill_parent"
         android:layout_weight="5"
         android:tag="btn_C" />
 
     <Button
         android:id="@+id/btn_D"
-        style="@style/quiz_button"
+        style="@style/QuizButton"
         android:layout_width="fill_parent"
         android:layout_weight="5"
         android:tag="btn_D" />

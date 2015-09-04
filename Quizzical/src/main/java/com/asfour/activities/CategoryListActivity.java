@@ -2,6 +2,7 @@ package com.asfour.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.asfour.R;
 import com.asfour.api.QuizzicalApi;
@@ -11,12 +12,21 @@ import com.asfour.application.Configuration;
 import com.asfour.managers.ObservablesManager;
 import com.asfour.models.Categories;
 import com.asfour.models.Category;
+import com.asfour.utils.ApiUtils;
 import com.asfour.viewmodels.CategoryListViewModel;
 import com.asfour.viewmodels.CategoryListViewModel.OnCategorySelectedListener;
 import com.asfour.viewmodels.impl.CategoryListViewModelImpl;
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
+import com.google.common.io.Closeables;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.inject.Inject;
 
+import retrofit.RetrofitError;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.app.AppObservable;
@@ -118,13 +128,27 @@ public class CategoryListActivity extends BaseActivity {
                             @Override
                             public void call(Throwable throwable) {
 
-                                mCategoryListViewModel.hideProgressbar();
-                                mCategoryListViewModel.showError(getString(R.string.err_fetching_categories));
+                                Log.e(TAG, ApiUtils.readApiErrorDescription(throwable));
+
+                                String message = getString(R.string.err_fetching_categories);
+
+                                if ((throwable instanceof RetrofitError)
+                                        && getStatusCode((RetrofitError)throwable) == 401){
+
+                                    message = getString(R.string.user_message_token_expired);
+                                }
+
+                                mCategoryListViewModel.showError(message);
                                 mCompositeSubscription.remove(mCategoriesSubscription);
 
                             }
 
                         });
         mCompositeSubscription.add(mCategoriesSubscription);
+    }
+
+    private int getStatusCode(RetrofitError error){
+        assert error != null;
+        return error.getResponse().getStatus();
     }
 }

@@ -30,13 +30,13 @@
 
             <Button
                 android:id="@+id/btn_A"
-                style="@style/quiz_button"
+                style="@style/QuizButton"
                 android:layout_width="match_parent"
                 android:tag="btn_A" />
 
             <Button
                 android:id="@+id/btn_B"
-                style="@style/quiz_button"
+                style="@style/QuizButton"
                 android:layout_width="match_parent"
                 android:tag="btn_B" />
         </TableRow>
@@ -47,13 +47,13 @@
 
             <Button
                 android:id="@+id/btn_C"
-                style="@style/quiz_button"
+                style="@style/QuizButton"
                 android:layout_width="match_parent"
                 android:tag="btn_C" />
 
             <Button
                 android:id="@+id/btn_D"
-                style="@style/quiz_button"
+                style="@style/QuizButton"
                 android:layout_width="match_parent"
                 android:tag="btn_D" />
 

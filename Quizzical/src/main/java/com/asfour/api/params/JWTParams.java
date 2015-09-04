@@ -1,16 +1,21 @@
 package com.asfour.api.params;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.asfour.api.Keys;
 import com.google.common.base.Preconditions;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.DurationFieldType;
 import org.jose4j.jws.AlgorithmIdentifiers;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.keys.HmacKey;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -57,9 +62,13 @@ public abstract class JWTParams {
 
         JwtClaims claims = new JwtClaims();
         claims.setIssuer(getIssuer());
-        claims.setExpirationTimeMinutesInTheFuture(getExpirationTimeMinutesInTheFuture());
-        claims.setClaim("exp", System.currentTimeMillis() + (2 * 60));
-        claims.setClaim("iat", System.currentTimeMillis());
+        //claims.setExpirationTimeMinutesInTheFuture(getExpirationTimeMinutesInTheFuture());
+
+        DateTime now = DateTime.now().toDateTime(DateTimeZone.UTC);
+
+        Log.e("Params", "Now: " + now.getMillis());
+        claims.setClaim("exp", now.withFieldAdded(DurationFieldType.minutes(),2).getMillis());
+        claims.setClaim("iat", now.getMillis());
 
         String jwtId = getJwtId();
         if (jwtId == null || jwtId.isEmpty()) {

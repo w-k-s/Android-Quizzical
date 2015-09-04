@@ -5,7 +5,8 @@
     android:animateLayoutChanges="true"
     android:background="@drawable/chalkboard"
     android:orientation="vertical"
-    android:padding="10dip">
+    style="@style/PaddedLayout"
+    >
 
     <TextView
         android:id="@+id/textview_title"
@@ -16,7 +17,7 @@
         android:gravity="center"
         android:layout_alignParentTop="true"
         android:textColor="@color/white"
-        android:textSize="40dip"></TextView>
+        android:textSize="@dimen/font_size_heading_1"></TextView>
 
     <LinearLayout
         android:id="@+id/layout_progress"
@@ -39,13 +40,15 @@
 
         <TextView
             android:id="@+id/textview_progress_message"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:textColor="#ffffff"
+            android:gravity="center"
+            android:textSize="@dimen/font_size_paragraph"
             android:tag="textview_progress_message"
             android:text="@string/downloading_categories"
-            android:textStyle="bold"></TextView>
+            ></TextView>
     </LinearLayout>
 
     <ListView
@@ -53,8 +56,9 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:tag="listview_categories"
+        android:visibility="visible"
         android:layout_below="@+id/textview_title"
-        android:layout_margin="15dip">
+        >
 
         <requestFocus />
     </ListView>

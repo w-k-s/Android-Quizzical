@@ -95,7 +95,7 @@ public class CategoryListViewModelImpl implements CategoryListViewModel {
     public void showError(final String message) {
         mCategoriesListView.setVisibility(View.GONE);
         mProgressBar.setVisibility(View.GONE);
-        mProgressLayout.setVisibility(View.GONE);
+        mProgressLayout.setVisibility(View.VISIBLE);
         mProgressMessage.setText(message);
     }
 

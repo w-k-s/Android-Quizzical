@@ -9,6 +9,8 @@ import com.asfour.modules.AppModule;
 import com.asfour.modules.ConfigModule;
 import com.asfour.utils.FontsOverride;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 /**
  * Created by Waqqas on 30/06/15.
  */
@@ -33,6 +35,8 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        JodaTimeAndroid.init(this);
 
         setFontsOverride();
         initializeDagger();
