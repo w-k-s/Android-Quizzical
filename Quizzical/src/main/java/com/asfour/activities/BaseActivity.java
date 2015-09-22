@@ -2,8 +2,6 @@ package com.asfour.activities;
 
 import android.app.Activity;
 
-import com.asfour.managers.ObservablesManager;
-
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -22,8 +20,6 @@ public class BaseActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        ObservablesManager.getInstance().clear();
         mCompositeSubscription.unsubscribe();
     }
 }

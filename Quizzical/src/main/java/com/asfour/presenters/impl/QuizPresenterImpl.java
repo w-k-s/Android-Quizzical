@@ -1,4 +1,4 @@
-package com.asfour.viewmodels.impl;
+package com.asfour.presenters.impl;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -11,12 +11,16 @@ import android.widget.TextView;
 import com.asfour.R;
 import com.asfour.application.Configuration;
 import com.asfour.models.Question;
-import com.asfour.viewmodels.QuizViewModel;
+import com.asfour.presenters.QuizPresenter;
+
+import butterknife.Bind;
+import butterknife.BindColor;
+import butterknife.ButterKnife;
 
 /**
  * Created by Waqqas on 03/07/15.
  */
-public class QuizViewModelImpl implements QuizViewModel {
+public class QuizPresenterImpl implements QuizPresenter {
 
     private Context mContext;
     private View mView;
@@ -24,9 +28,16 @@ public class QuizViewModelImpl implements QuizViewModel {
 
     private OnAnswerSelectedListener mAnswerSelectedListener;
 
-    private TextView mQuestionTextView;
-    private Button mOptionAButton, mOptionBButton, mOptionCButton, mOptionDButton;
-    private Button[] mOptionButtons;
+    @Bind(R.id.tv_question) TextView mQuestionTextView;
+    @Bind(R.id.btn_A) Button mOptionAButton;
+    @Bind(R.id.btn_B) Button mOptionBButton;
+    @Bind(R.id.btn_C) Button mOptionCButton;
+    @Bind(R.id.btn_D) Button mOptionDButton;
+    @Bind({R.id.btn_A,R.id.btn_B,R.id.btn_C,R.id.btn_D})
+    Button[] mOptionButtons;
+
+    @BindColor(R.color.green) int correctAnswerColor;
+    @BindColor(R.color.red) int incorrectAnswerColor;
 
     private ProgressDialog mProgressDialog;
     private AlertDialog mAlertDialog;
@@ -43,7 +54,7 @@ public class QuizViewModelImpl implements QuizViewModel {
         }
     };
 
-    public QuizViewModelImpl(final Context context,
+    public QuizPresenterImpl(final Context context,
                              final View view,
                              final Configuration configuration) {
 
@@ -56,20 +67,13 @@ public class QuizViewModelImpl implements QuizViewModel {
 
     private void initViews() {
 
-        mQuestionTextView = (TextView) mView.findViewById(R.id.tv_question);
-
-        mOptionAButton = (Button) mView.findViewById(R.id.btn_A);
-        mOptionBButton = (Button) mView.findViewById(R.id.btn_B);
-        mOptionCButton = (Button) mView.findViewById(R.id.btn_C);
-        mOptionDButton = (Button) mView.findViewById(R.id.btn_D);
-
-        mOptionButtons = new Button[]{mOptionAButton, mOptionBButton, mOptionCButton, mOptionDButton};
-
+        ButterKnife.bind(this,mView);
         for (Button button : mOptionButtons) {
             button.setOnClickListener(mOptionSelectedListener);
         }
     }
 
+    //TODO: Really really bad
     private View getViewForAnswer(String answer) {
         if (answer.equals(Question.OPTION_A)) {
             return mOptionAButton;
@@ -84,6 +88,7 @@ public class QuizViewModelImpl implements QuizViewModel {
         }
     }
 
+    //TODO: Really really bad!
     private String getAnswerFromView(View view) {
 
         switch (view.getId()) {
@@ -111,7 +116,7 @@ public class QuizViewModelImpl implements QuizViewModel {
     public void showQuestion(Question question) {
 
         setButtonTextColor(mContext.getResources().getColor(R.color.white));
-        toggleAnswerButtonsEnabled(true);
+        setAnswerButtonsEnabled(true);
 
         mQuestionTextView.setText(question.getText());
         mOptionAButton.setText(question.getA());
@@ -122,15 +127,15 @@ public class QuizViewModelImpl implements QuizViewModel {
 
     }
 
-    private void highlightButtonWithAnswer(String answer, int color) {
+    private void setHighlightColorOnButtonWithAnswer(int color, String answer) {
 
         Button answerButton = (Button) getViewForAnswer(answer);
         if (answerButton != null) {
-            highlightButton(answerButton, color);
+            setHighlightColorOnButton(color, answerButton);
         }
     }
 
-    private void highlightButton(Button button, int color) {
+    private void setHighlightColorOnButton(int color,Button button) {
         assert button != null;
         assert color > 0;
 
@@ -139,13 +144,13 @@ public class QuizViewModelImpl implements QuizViewModel {
 
 
     @Override
-    public void showAnswers(String correct, String userAnswer) {
+    public void showAnswers(String correctAnswer, String userAnswer) {
 
-        toggleAnswerButtonsEnabled(false);
+        setAnswerButtonsEnabled(false);
 
-        highlightButtonWithAnswer(correct, mContext.getResources().getColor(R.color.green));
-        if (!correct.equals(userAnswer)) {
-            highlightButtonWithAnswer(userAnswer, mContext.getResources().getColor(R.color.red));
+        setHighlightColorOnButtonWithAnswer(correctAnswerColor,correctAnswer);
+        if (!correctAnswer.equals(userAnswer)) {
+            setHighlightColorOnButtonWithAnswer(incorrectAnswerColor,userAnswer);
         }
     }
 
@@ -203,7 +208,7 @@ public class QuizViewModelImpl implements QuizViewModel {
         }
     }
 
-    private void toggleAnswerButtonsEnabled(boolean enable) {
+    private void setAnswerButtonsEnabled(boolean enable) {
 
         for (Button button : mOptionButtons) {
             button.setEnabled(enable);

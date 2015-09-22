@@ -1,4 +1,4 @@
-package com.asfour.viewmodels;
+package com.asfour.presenters;
 
 import com.asfour.models.Categories;
 import com.asfour.models.Category;
@@ -6,7 +6,7 @@ import com.asfour.models.Category;
 /**
  * Created by Waqqas on 02/07/15.
  */
-public interface CategoryListViewModel {
+public interface CategoryListPresenter {
     public static interface OnCategorySelectedListener {
         void onCategorySelected(Category category);
     }

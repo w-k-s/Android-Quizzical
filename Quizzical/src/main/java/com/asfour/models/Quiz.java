@@ -3,8 +3,6 @@ package com.asfour.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.common.base.MoreObjects;
-
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -105,11 +103,11 @@ public class Quiz implements Parcelable, Iterator<Question> {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("category", this.category)
-                .add("questions", this.questions)
-                .add("score", score)
-                .add("currentQuestionIndex", currentQuestionIndex)
-                .toString();
+        return "Quiz{" +
+                "category=" + category +
+                ", questions=" + questions +
+                ", score=" + score +
+                ", currentQuestionIndex=" + currentQuestionIndex +
+                '}';
     }
 }

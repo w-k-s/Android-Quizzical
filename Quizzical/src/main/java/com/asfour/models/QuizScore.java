@@ -3,7 +3,6 @@ package com.asfour.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 /**
@@ -75,9 +74,9 @@ public class QuizScore implements Parcelable {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("score", this.score)
-                .add("maxScore", this.maxScore)
-                .toString();
+        return "QuizScore{" +
+                "score=" + score +
+                ", maxScore=" + maxScore +
+                '}';
     }
 }

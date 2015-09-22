@@ -11,14 +11,14 @@ import java.util.Map;
 /**
  * Created by Waqqas on 08/08/15.
  */
-public class QuestionParams extends ApiParams {
+public class QuestionParameters extends APIParameters {
 
     private Category category;
     private int limit;
 
-    public QuestionParams(@NonNull Context context, @NonNull Category category, int limit) {
+    public QuestionParameters(@NonNull Category category, int limit) {
 
-        super(context);
+        super();
 
         Preconditions.checkNotNull(category);
         Preconditions.checkArgument(limit > 0);

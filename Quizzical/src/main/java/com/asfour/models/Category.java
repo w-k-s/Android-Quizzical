@@ -3,8 +3,6 @@ package com.asfour.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.common.base.MoreObjects;
-
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -56,9 +54,8 @@ public class Category implements Parcelable {
 
     @Override
     public String toString() {
-        return MoreObjects
-                .toStringHelper(this)
-                .add("name", name)
-                .toString();
+        return "Category{" +
+                "name='" + name + '\'' +
+                '}';
     }
 }

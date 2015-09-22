@@ -2,6 +2,7 @@ package com.asfour.component;
 
 import com.asfour.activities.CategoryListActivity;
 import com.asfour.activities.QuizActivity;
+import com.asfour.activities.ScoreActivity;
 import com.asfour.modules.ApiModule;
 import com.asfour.modules.AppModule;
 import com.asfour.modules.ConfigModule;
@@ -19,5 +20,5 @@ public interface AppComponent {
 
     void inject(CategoryListActivity categoryListActivity);
     void inject(QuizActivity quizActivity);
-
+    void inject(ScoreActivity scoreActivity);
 }

@@ -3,8 +3,6 @@ package com.asfour.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.common.base.MoreObjects;
-
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
@@ -128,13 +126,13 @@ public class Question implements Parcelable {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("text", text)
-                .add("answer", answer)
-                .add("a", a)
-                .add("b", b)
-                .add("c", c)
-                .add("d", d)
-                .toString();
+        return "Question{" +
+                "text='" + text + '\'' +
+                ", answer='" + answer + '\'' +
+                ", a='" + a + '\'' +
+                ", b='" + b + '\'' +
+                ", c='" + c + '\'' +
+                ", d='" + d + '\'' +
+                '}';
     }
 }

@@ -9,11 +9,11 @@ import com.asfour.R;
  */
 public class Configuration {
 
-    private static int mNumQuestionsInQuiz;
-    private static long mDelayBeforeNextQuestion;
-    private static boolean mShowAds;
-    private static int mDelayBeforeDisplayInterstitialAds;
-    private static long mSplashScreenDuration;
+    private  int mNumQuestionsInQuiz;
+    private  long mDelayBeforeNextQuestion;
+    private  boolean mShowAds;
+    private  int mDelayBeforeDisplayInterstitialAds;
+    private  long mSplashScreenDuration;
 
     public Configuration(Context context) {
 
@@ -24,23 +24,23 @@ public class Configuration {
         this.mSplashScreenDuration = context.getResources().getInteger(R.integer.splash_screen_duration);
     }
 
-    public static int getNumQuestionsInQuiz() {
+    public  int getNumQuestionsInQuiz() {
         return mNumQuestionsInQuiz;
     }
 
-    public static long getDelayBeforeNextQuestion() {
+    public  long getDelayBeforeNextQuestion() {
         return mDelayBeforeNextQuestion;
     }
 
-    public static boolean isShowAds() {
+    public  boolean showAds() {
         return mShowAds;
     }
 
-    public static int getDelayBeforeDisplayInterstitialAds() {
+    public  int getDelayBeforeDisplayInterstitialAds() {
         return mDelayBeforeDisplayInterstitialAds;
     }
 
-    public static long getSplashScreenDuration() {
+    public  long getSplashScreenDuration() {
         return mSplashScreenDuration;
     }
 }

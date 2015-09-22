@@ -2,27 +2,17 @@ package com.asfour.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.asfour.R;
 import com.asfour.api.QuizzicalApi;
-import com.asfour.api.params.CategoryParams;
+import com.asfour.api.params.CategoryParameters;
 import com.asfour.application.App;
 import com.asfour.application.Configuration;
-import com.asfour.managers.ObservablesManager;
 import com.asfour.models.Categories;
 import com.asfour.models.Category;
-import com.asfour.utils.ApiUtils;
-import com.asfour.viewmodels.CategoryListViewModel;
-import com.asfour.viewmodels.CategoryListViewModel.OnCategorySelectedListener;
-import com.asfour.viewmodels.impl.CategoryListViewModelImpl;
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
-import com.google.common.io.Closeables;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import com.asfour.presenters.CategoryListPresenter;
+import com.asfour.presenters.CategoryListPresenter.OnCategorySelectedListener;
+import com.asfour.presenters.impl.CategoryListPresenterImpl;
 
 import javax.inject.Inject;
 
@@ -38,11 +28,11 @@ import rx.functions.Action1;
  *
  * @author Waqqas
  */
-public class CategoryListActivity extends BaseActivity {
+public class CategoryListActivity extends BaseActivity implements OnCategorySelectedListener{
 
     static final String TAG = CategoryListActivity.class.getSimpleName();
 
-    private CategoryListViewModel mCategoryListViewModel;
+    private CategoryListPresenter mCategoryListPresenter;
     private Categories mCategories;
     private Subscription mCategoriesSubscription;
 
@@ -51,20 +41,6 @@ public class CategoryListActivity extends BaseActivity {
 
     @Inject
     public Configuration mConfig;
-
-    private OnCategorySelectedListener mCategorySelectedListener = new OnCategorySelectedListener() {
-
-        @Override
-        public void onCategorySelected(Category category) {
-
-            Intent intent = new Intent(CategoryListActivity.this, QuizActivity.class);
-            intent.putExtra(App.Extras.Category, category);
-
-            startActivity(intent);
-        }
-
-    };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +54,8 @@ public class CategoryListActivity extends BaseActivity {
             mCategories = savedInstanceState.getParcelable(App.Extras.Categories);
         }
 
-        mCategoryListViewModel = new CategoryListViewModelImpl(this, findViewById(android.R.id.content), mConfig);
-        mCategoryListViewModel.setOnCategorySelectedListener(mCategorySelectedListener);
+        mCategoryListPresenter = new CategoryListPresenterImpl(this, findViewById(android.R.id.content), mConfig);
+        mCategoryListPresenter.setOnCategorySelectedListener(this);
     }
 
     @Override
@@ -87,7 +63,7 @@ public class CategoryListActivity extends BaseActivity {
         super.onResume();
 
         if (mCategories != null) {
-            mCategoryListViewModel.showCategories(mCategories);
+            mCategoryListPresenter.showCategories(mCategories);
         } else {
             loadCategories();
         }
@@ -102,53 +78,57 @@ public class CategoryListActivity extends BaseActivity {
 
     private void loadCategories() {
 
-        Observable<Categories> observable = null;
-        if (ObservablesManager.getInstance().contains(App.Observables.Categories)) {
-            observable = ObservablesManager.getInstance().getObservable(App.Observables.Categories);
-        } else {
-            observable = mQuizzicalApi.getCategories(new CategoryParams(this)).cache();
-            ObservablesManager.getInstance().cacheObservable(App.Observables.Categories, observable);
-        }
+        mCategoryListPresenter.showProgressbar();
 
-        mCategoryListViewModel.showProgressbar();
-        mCategoriesSubscription = AppObservable.bindActivity(this, observable)
-                        .subscribe(new Action1<Categories>() {
+        Observable<Categories> categoriesObservable = mQuizzicalApi.getCategories(new CategoryParameters());
 
-                            @Override
-                            public void call(Categories categories) {
+        mCategoriesSubscription = AppObservable.bindActivity(this, categoriesObservable)
+                .subscribe(new Action1<Categories>() {
 
-                                mCategories = categories;
-                                mCategoryListViewModel.hideProgressbar();
-                                mCategoryListViewModel.showCategories(categories);
-                                mCompositeSubscription.remove(mCategoriesSubscription);
-                            }
+                    @Override
+                    public void call(Categories categories) {
 
-                        }, new Action1<Throwable>() {
+                        mCategories = categories;
+                        mCategoryListPresenter.hideProgressbar();
+                        mCategoryListPresenter.showCategories(categories);
+                        mCompositeSubscription.remove(mCategoriesSubscription);
 
-                            @Override
-                            public void call(Throwable throwable) {
+                    }
 
-                                Log.e(TAG, ApiUtils.readApiErrorDescription(throwable));
+                }, new Action1<Throwable>() {
 
-                                String message = getString(R.string.err_fetching_categories);
+                    @Override
+                    public void call(Throwable throwable) {
 
-                                if ((throwable instanceof RetrofitError)
-                                        && getStatusCode((RetrofitError)throwable) == 401){
+                        String message = getString(R.string.err_fetching_categories);
 
-                                    message = getString(R.string.user_message_token_expired);
-                                }
+                        if ((throwable instanceof RetrofitError)
+                                && getStatusCode((RetrofitError)throwable) == 401){
 
-                                mCategoryListViewModel.showError(message);
-                                mCompositeSubscription.remove(mCategoriesSubscription);
+                            message = getString(R.string.user_message_token_expired);
+                        }
 
-                            }
+                        mCategoryListPresenter.showError(message);
+                        mCompositeSubscription.remove(mCategoriesSubscription);
 
-                        });
+                    }
+
+                });
         mCompositeSubscription.add(mCategoriesSubscription);
     }
 
     private int getStatusCode(RetrofitError error){
         assert error != null;
         return error.getResponse().getStatus();
+    }
+
+    @Override
+    public void onCategorySelected(Category category) {
+
+        Intent intent = new Intent(CategoryListActivity.this, QuizActivity.class);
+        intent.putExtra(App.Extras.Category, category);
+
+        startActivity(intent);
+
     }
 }

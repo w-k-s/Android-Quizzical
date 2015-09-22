@@ -7,8 +7,8 @@ import com.asfour.R;
 import com.asfour.application.App;
 import com.asfour.application.Configuration;
 import com.asfour.models.QuizScore;
-import com.asfour.viewmodels.ScoreViewModel;
-import com.asfour.viewmodels.impl.ScoreViewModelImpl;
+import com.asfour.presenters.ScorePresenter;
+import com.asfour.presenters.impl.ScorePresenterImpl;
 
 import javax.inject.Inject;
 
@@ -19,7 +19,7 @@ import javax.inject.Inject;
  * @author Waqqas
  */
 public class ScoreActivity extends Activity {
-    private ScoreViewModel mScoreViewModel;
+    private ScorePresenter mScorePresenter;
     private QuizScore mQuizScore;
 
     @Inject
@@ -36,11 +36,13 @@ public class ScoreActivity extends Activity {
             mQuizScore = getIntent().getExtras().getParcelable(App.Extras.Score);
         }
 
+        App.component().inject(this);
+
         if (mQuizScore == null) {
             finish();
         } else {
-            mScoreViewModel = new ScoreViewModelImpl(this, findViewById(android.R.id.content), mConfig);
-            mScoreViewModel.showScore(mQuizScore);
+            mScorePresenter = new ScorePresenterImpl(this, findViewById(android.R.id.content), mConfig);
+            mScorePresenter.showScore(mQuizScore);
         }
 
     }

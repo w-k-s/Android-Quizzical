@@ -1,4 +1,4 @@
-package com.asfour.viewmodels.impl;
+package com.asfour.presenters.impl;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -16,28 +16,31 @@ import com.asfour.application.Configuration;
 import com.asfour.models.Categories;
 import com.asfour.models.Category;
 import com.asfour.utils.AdMobUtils;
-import com.asfour.viewmodels.CategoryListViewModel;
+import com.asfour.presenters.CategoryListPresenter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * Created by Waqqas on 02/07/15.
  */
-public class CategoryListViewModelImpl implements CategoryListViewModel {
+public class CategoryListPresenterImpl implements CategoryListPresenter {
 
     private Context mContext;
     private View mView;
     private Configuration mConfig;
 
-    private LinearLayout mProgressLayout;
-    private ProgressBar mProgressBar;
-    private TextView mProgressMessage;
-    private TextView mTitleTextView;
+    @Bind(R.id.layout_progress) LinearLayout mProgressLayout;
+    @Bind(R.id.progressbar) ProgressBar mProgressBar;
+    @Bind(R.id.textview_progress_message) TextView mProgressMessage;
+    @Bind(R.id.textview_title) TextView mTitleTextView;
+    @Bind(R.id.listview_categories) ListView mCategoriesListView;
 
-    private ListView mCategoriesListView;
     private OnCategorySelectedListener mCategorySelectedListener;
 
-    public CategoryListViewModelImpl(final Context context,
+    public CategoryListPresenterImpl(final Context context,
                                      final View view,
                                      final Configuration configuration) {
 
@@ -46,26 +49,25 @@ public class CategoryListViewModelImpl implements CategoryListViewModel {
         this.mConfig = configuration;
 
         initViews();
+
+        if (mConfig.showAds()){
+            loadAds();
+        }
     }
 
     private void initViews() {
 
-        mTitleTextView = (TextView) mView.findViewById(R.id.textview_title);
-        mProgressLayout = (LinearLayout) mView.findViewById(R.id.layout_progress);
-        mProgressBar = (ProgressBar) mView.findViewById(R.id.progressbar);
-        mProgressMessage = (TextView) mView.findViewById(R.id.textview_progress_message);
+        ButterKnife.bind(this,mView);
 
+        mTitleTextView.setText(mContext.getString(R.string.app_name));
         mTitleTextView.setTypeface(
                 Typeface.createFromAsset(mContext.getAssets(), "Bender-Inline.otf")
         );
-        mTitleTextView.setText(mContext.getString(R.string.app_name));
 
-        mCategoriesListView = (ListView) mView.findViewById(R.id.listview_categories);
         mCategoriesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
                 if (mCategorySelectedListener != null) {
                     final Category category = (Category) adapterView.getAdapter().getItem(i);
                     mCategorySelectedListener.onCategorySelected(category);
@@ -74,8 +76,6 @@ public class CategoryListViewModelImpl implements CategoryListViewModel {
             }
 
         });
-
-        loadAdsIfConfigured();
     }
 
     @Override
@@ -126,12 +126,12 @@ public class CategoryListViewModelImpl implements CategoryListViewModel {
         mCategorySelectedListener = listener;
     }
 
-    public void loadAdsIfConfigured() {
-        if (mConfig.isShowAds()) {
+    public void loadAds() {
+
             AdView adView = (AdView) mView.findViewById(R.id.ad_view);
             AdRequest adRequest = AdMobUtils.newAdRequestBuilder().build();
 
             adView.loadAd(adRequest);
-        }
+
     }
 }

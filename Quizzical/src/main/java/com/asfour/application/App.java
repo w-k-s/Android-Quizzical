@@ -16,17 +16,12 @@ import net.danlew.android.joda.JodaTimeAndroid;
  */
 public class App extends Application {
 
-    public static interface Extras {
-        String Category = "com.asfour.extras.category";
-        String Categories = "com.asfour.extras.categories";
-        String Questions = "com.asfour.extras.questions";
-        String Quiz = "com.asfour.extras.quiz";
-        String Score = "com.asfour.extras.score";
-    }
-
-    public static interface Observables {
-        String Categories = "com.asfour.observables.categories";
-        String Questions = "com.asfour.observables.questions";
+    public static class Extras {
+        public static final String Category = "com.asfour.extras.category";
+        public static final String Categories = "com.asfour.extras.categories";
+        public static final String Questions = "com.asfour.extras.questions";
+        public static final String Quiz = "com.asfour.extras.quiz";
+        public static final String Score = "com.asfour.extras.score";
     }
 
     private static final String TAG = App.class.getSimpleName();

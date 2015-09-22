@@ -1,4 +1,4 @@
-package com.asfour.viewmodels;
+package com.asfour.presenters;
 
 import android.content.DialogInterface;
 
@@ -7,7 +7,7 @@ import com.asfour.models.Question;
 /**
  * Created by Waqqas on 03/07/15.
  */
-public interface QuizViewModel {
+public interface QuizPresenter {
     public static interface OnAnswerSelectedListener {
         public void onAnswerSelected(String answer);
     }

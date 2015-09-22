@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.asfour.api.Keys;
+import com.asfour.application.App;
 import com.google.common.base.Preconditions;
 
 import org.joda.time.DateTime;
@@ -21,21 +22,17 @@ import java.util.Map;
 /**
  * Created by Waqqas on 07/08/15.
  */
-public abstract class JWTParams {
+public abstract class JSONWebTokenParameters {
 
+    private final static String ISSUER_NAME = "com.asfour.Quizzical";
     private final static int TOKEN_EXPIRES_AFTER_MINUTES = 5;
 
-    private Context context;
+    public JSONWebTokenParameters() {
 
-    public JWTParams(Context context) {
-
-        Preconditions.checkNotNull(context);
-
-        this.context = context;
     }
 
     protected String getIssuer() {
-        return context.getApplicationInfo().packageName;
+        return ISSUER_NAME;
     }
 
     protected int getExpirationTimeMinutesInTheFuture() {
@@ -62,7 +59,6 @@ public abstract class JWTParams {
 
         JwtClaims claims = new JwtClaims();
         claims.setIssuer(getIssuer());
-        //claims.setExpirationTimeMinutesInTheFuture(getExpirationTimeMinutesInTheFuture());
 
         DateTime now = DateTime.now().toDateTime(DateTimeZone.UTC);
 

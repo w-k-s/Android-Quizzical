@@ -8,16 +8,15 @@ import android.util.Log;
 
 import com.asfour.R;
 import com.asfour.api.QuizzicalApi;
-import com.asfour.api.params.QuestionParams;
+import com.asfour.api.params.QuestionParameters;
 import com.asfour.application.App;
 import com.asfour.application.Configuration;
-import com.asfour.managers.ObservablesManager;
 import com.asfour.models.Category;
 import com.asfour.models.Question;
 import com.asfour.models.Questions;
 import com.asfour.models.Quiz;
-import com.asfour.viewmodels.QuizViewModel;
-import com.asfour.viewmodels.impl.QuizViewModelImpl;
+import com.asfour.presenters.QuizPresenter;
+import com.asfour.presenters.impl.QuizPresenterImpl;
 
 import javax.inject.Inject;
 
@@ -25,17 +24,12 @@ import rx.Observable;
 import rx.android.app.AppObservable;
 import rx.functions.Action1;
 
-/**
- * Displays unique random question to users. Highlights answers. Updates scores.
- * Starts ScoreActivity when user has answered all questions.
- *
- * @author Waqqas
- */
-public class QuizActivity extends BaseActivity implements QuizViewModel.OnAnswerSelectedListener {
+
+public class QuizActivity extends BaseActivity implements QuizPresenter.OnAnswerSelectedListener {
 
     private static final String TAG = QuizActivity.class.getSimpleName();
 
-    private QuizViewModel mQuizViewModel;
+    private QuizPresenter mQuizPresenter;
     private Quiz mQuiz;
     private Category mCategory;
 
@@ -67,8 +61,8 @@ public class QuizActivity extends BaseActivity implements QuizViewModel.OnAnswer
             finish();
         }
 
-        mQuizViewModel = new QuizViewModelImpl(this, findViewById(android.R.id.content), mConfig);
-        mQuizViewModel.setOnAnswerSelectedListener(this);
+        mQuizPresenter = new QuizPresenterImpl(this, findViewById(android.R.id.content), mConfig);
+        mQuizPresenter.setOnAnswerSelectedListener(this);
     }
 
     @Override
@@ -93,61 +87,52 @@ public class QuizActivity extends BaseActivity implements QuizViewModel.OnAnswer
     @Override
     protected void onPause() {
         super.onPause();
-        mQuizViewModel.dismissProgress();
-        mQuizViewModel.dismissDownlaodErrorDialog();
+        mQuizPresenter.dismissProgress();
+        mQuizPresenter.dismissDownlaodErrorDialog();
 
     }
 
     private void startQuiz() {
         mQuiz.shuffle();
-        mQuizViewModel.showQuestion(mQuiz.next());
+        mQuizPresenter.showQuestion(mQuiz.next());
     }
 
     private void resumeQuiz() {
 
-        mQuizViewModel.showQuestion(mQuiz.getCurrentQuestion());
+        mQuizPresenter.showQuestion(mQuiz.getCurrentQuestion());
     }
 
     private void loadQuiz() {
 
-        Observable<Questions> observable = null;
-        if (ObservablesManager.getInstance().contains(App.Observables.Questions)) {
-            observable = ObservablesManager.getInstance().getObservable(App.Observables.Questions);
-        } else {
-            observable = mQuizzicalApi.getQuestions(
-                    new QuestionParams(
-                            this, mCategory,
-                            mConfig.getNumQuestionsInQuiz()
-                    )
-            ).cache();
-            ObservablesManager.getInstance().cacheObservable(App.Observables.Questions, observable);
-        }
+        mQuizPresenter.showProgress();
 
-        mQuizViewModel.showProgress();
+        Observable<Questions> questionsObservable = mQuizzicalApi.getQuestions(
+                new QuestionParameters(mCategory,mConfig.getNumQuestionsInQuiz())
+        );
 
-        mCompositeSubscription.add(AppObservable.bindActivity(this, observable)
+        mCompositeSubscription.add(AppObservable.bindActivity(this, questionsObservable)
                 .subscribe(new Action1<Questions>() {
                     @Override
                     public void call(Questions questions) {
 
-                        mQuizViewModel.dismissProgress();
-
+                        mQuizPresenter.dismissProgress();
                         mQuiz = new Quiz(mCategory, questions);
                         startQuiz();
                     }
+
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
 
                         Log.e(TAG, "" + throwable);
 
-                        mQuizViewModel.dismissProgress();
-                        mQuizViewModel.showDownloadingError(
+                        mQuizPresenter.dismissProgress();
+                        mQuizPresenter.showDownloadingError(
                                 getString(R.string.err_fetching_questions),
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        mQuizViewModel.dismissDownlaodErrorDialog();
+                                        mQuizPresenter.dismissDownlaodErrorDialog();
                                         finish();
                                     }
                                 }
@@ -161,40 +146,37 @@ public class QuizActivity extends BaseActivity implements QuizViewModel.OnAnswer
     @Override
     public void onAnswerSelected(String answer) {
 
-        mQuizViewModel.showAnswers(mQuiz.getCurrentQuestion().getAnswer(), answer);
+        mQuizPresenter.showAnswers(mQuiz.getCurrentQuestion().getAnswer(), answer);
 
         if (mQuiz.getCurrentQuestion().checkAnswer(answer)) {
             mQuiz.incrementScore();
         }
 
-        postNextAction();
+        runAfterDelay(mConfig.getDelayBeforeNextQuestion(),mQuiz.hasNext()? mNextQuestionRunnable : mShowScoresRunnable);
     }
 
-    private void postNextAction() {
+    private void runAfterDelay(long delay,Runnable runnable) {
 
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                if (mQuiz.hasNext()) {
-
-                    Question question = mQuiz.next();
-                    mQuizViewModel.showQuestion(question);
-
-                } else {
-
-                    Intent intent = new Intent(QuizActivity.this, ScoreActivity.class);
-                    intent.putExtra(App.Extras.Score, mQuiz.getScore());
-
-                    startActivity(intent);
-                    finish();
-                }
-
-            }
-        }, mConfig.getDelayBeforeNextQuestion());
-
+        handler.postDelayed(runnable, delay);
     }
 
+    private Runnable mNextQuestionRunnable = new Runnable(){
+        @Override
+        public void run() {
+            Question question = mQuiz.next();
+            mQuizPresenter.showQuestion(question);
+        }
+    };
 
+    private Runnable mShowScoresRunnable = new Runnable(){
+        @Override
+        public void run() {
+            Intent intent = new Intent(QuizActivity.this, ScoreActivity.class);
+            intent.putExtra(App.Extras.Score, mQuiz.getScore());
+
+            startActivity(intent);
+            finish();
+        }
+    };
 }

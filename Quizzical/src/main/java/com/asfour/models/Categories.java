@@ -3,13 +3,12 @@ package com.asfour.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.common.base.MoreObjects;
-
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Waqqas on 02/07/15.
@@ -17,8 +16,8 @@ import java.util.List;
 @Root(strict = false)
 public class Categories implements Parcelable {
 
-    public static final Parcelable.Creator<Categories> CREATOR
-            = new Parcelable.Creator<Categories>() {
+    public static final Parcelable.Creator<Categories> CREATOR = new Parcelable.Creator<Categories>() {
+
         public Categories createFromParcel(Parcel in) {
             return new Categories(in);
         }
@@ -59,9 +58,8 @@ public class Categories implements Parcelable {
 
     @Override
     public String toString() {
-        return MoreObjects
-                .toStringHelper(this)
-                .add("categories", categories)
-                .toString();
+        return "Categories{" +
+                "categories=" + categories +
+                '}';
     }
 }
