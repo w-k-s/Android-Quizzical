@@ -7,5 +7,9 @@ import com.asfour.models.QuizScore;
  */
 public interface ScorePresenter {
 
+    boolean showAds();
+    void setShowAds(boolean showAds);
+    void setMillisecondsDelayBeforeDisplayingAd(long millisecondsDelay);
+    long getMillisecondsDelayBeforeDisplayingAd();
     void showScore(QuizScore score);
 }

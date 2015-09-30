@@ -18,13 +18,17 @@ import butterknife.BindColor;
 import butterknife.ButterKnife;
 
 /**
+ * This class has a very "primitive" and "un Object-Oriented" implementation.
+ *
+ * The reason for this is that the project started off as a very basic University assignment
+ * which I then extended to a Quiz application (and publish on the App store).
+ *
  * Created by Waqqas on 03/07/15.
  */
 public class QuizPresenterImpl implements QuizPresenter {
 
     private Context mContext;
     private View mView;
-    private Configuration mConfig;
 
     private OnAnswerSelectedListener mAnswerSelectedListener;
 
@@ -55,12 +59,10 @@ public class QuizPresenterImpl implements QuizPresenter {
     };
 
     public QuizPresenterImpl(final Context context,
-                             final View view,
-                             final Configuration configuration) {
+                             final View view) {
 
         mContext = context;
         mView = view;
-        mConfig = configuration;
 
         initViews();
     }
@@ -143,6 +145,7 @@ public class QuizPresenterImpl implements QuizPresenter {
     }
 
 
+    //TODO Really really have to make an 'Answer' class
     @Override
     public void showAnswers(String correctAnswer, String userAnswer) {
 

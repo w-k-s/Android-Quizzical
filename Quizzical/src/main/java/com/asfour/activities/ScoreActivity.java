@@ -41,7 +41,9 @@ public class ScoreActivity extends Activity {
         if (mQuizScore == null) {
             finish();
         } else {
-            mScorePresenter = new ScorePresenterImpl(this, findViewById(android.R.id.content), mConfig);
+            mScorePresenter = new ScorePresenterImpl(this, findViewById(android.R.id.content));
+            mScorePresenter.setShowAds(mConfig.showAds());
+            mScorePresenter.setMillisecondsDelayBeforeDisplayingAd(mConfig.getDelayBeforeDisplayInterstitialAds());
             mScorePresenter.showScore(mQuizScore);
         }
 

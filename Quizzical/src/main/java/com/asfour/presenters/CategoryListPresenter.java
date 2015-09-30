@@ -11,6 +11,10 @@ public interface CategoryListPresenter {
         void onCategorySelected(Category category);
     }
 
+    public void setShowAds(boolean showAds);
+
+    public boolean showAds();
+
     public void showProgressbar();
 
     public void hideProgressbar();

@@ -29,7 +29,8 @@ public class ScorePresenterImpl implements ScorePresenter {
 
     private Context mContext;
     private View mView;
-    private Configuration mConfig;
+    private boolean mShowAds;
+    private long mAdDelayMillis;
 
     private static final long MILLISECONDS_PER_TICK = 50;
 
@@ -40,14 +41,13 @@ public class ScorePresenterImpl implements ScorePresenter {
     @Bind(R.id.textview_grade) TextView mGradeTextView;
     private int[] mColors;
 
-    public ScorePresenterImpl(Context context, View view, Configuration configuration) {
+    public ScorePresenterImpl(Context context, View view) {
         mContext = context;
         mView = view;
-        mConfig = configuration;
 
         mColors = mContext.getResources().getIntArray(R.array.grade_colors);
 
-        if (mConfig.showAds()) {
+        if (showAds()) {
             loadAds();
         }
 
@@ -131,12 +131,32 @@ public class ScorePresenterImpl implements ScorePresenter {
         @Override
         public void onAnimationEnd(Animation animation) {
 
-            if (mConfig.showAds() && mInterstitialAd.isLoaded()){
-                showAdAfterDelay(mConfig.getDelayBeforeDisplayInterstitialAds());
+            if (showAds() && mInterstitialAd.isLoaded()){
+                showAdAfterDelay(getMillisecondsDelayBeforeDisplayingAd());
             }
 
         }
     };
+
+    @Override
+    public void setShowAds(boolean showAds) {
+        mShowAds = showAds;
+    }
+
+    @Override
+    public boolean showAds() {
+        return mShowAds;
+    }
+
+    @Override
+    public void setMillisecondsDelayBeforeDisplayingAd(long millisecondsDelay) {
+        mAdDelayMillis = millisecondsDelay;
+    }
+
+    @Override
+    public long getMillisecondsDelayBeforeDisplayingAd() {
+        return mAdDelayMillis;
+    }
 
     private void loadAds() {
         mInterstitialAd = new InterstitialAd(mContext);

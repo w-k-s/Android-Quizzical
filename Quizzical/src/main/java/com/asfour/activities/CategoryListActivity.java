@@ -54,8 +54,9 @@ public class CategoryListActivity extends BaseActivity implements OnCategorySele
             mCategories = savedInstanceState.getParcelable(App.Extras.Categories);
         }
 
-        mCategoryListPresenter = new CategoryListPresenterImpl(this, findViewById(android.R.id.content), mConfig);
+        mCategoryListPresenter = new CategoryListPresenterImpl(this, findViewById(android.R.id.content));
         mCategoryListPresenter.setOnCategorySelectedListener(this);
+        mCategoryListPresenter.setShowAds(mConfig.showAds());
     }
 
     @Override

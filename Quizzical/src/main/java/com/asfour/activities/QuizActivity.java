@@ -61,7 +61,7 @@ public class QuizActivity extends BaseActivity implements QuizPresenter.OnAnswer
             finish();
         }
 
-        mQuizPresenter = new QuizPresenterImpl(this, findViewById(android.R.id.content), mConfig);
+        mQuizPresenter = new QuizPresenterImpl(this, findViewById(android.R.id.content));
         mQuizPresenter.setOnAnswerSelectedListener(this);
     }
 

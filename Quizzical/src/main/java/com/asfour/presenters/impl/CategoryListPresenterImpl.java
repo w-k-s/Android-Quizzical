@@ -30,7 +30,7 @@ public class CategoryListPresenterImpl implements CategoryListPresenter {
 
     private Context mContext;
     private View mView;
-    private Configuration mConfig;
+    private boolean mShowAds;
 
     @Bind(R.id.layout_progress) LinearLayout mProgressLayout;
     @Bind(R.id.progressbar) ProgressBar mProgressBar;
@@ -41,16 +41,14 @@ public class CategoryListPresenterImpl implements CategoryListPresenter {
     private OnCategorySelectedListener mCategorySelectedListener;
 
     public CategoryListPresenterImpl(final Context context,
-                                     final View view,
-                                     final Configuration configuration) {
+                                     final View view) {
 
         this.mContext = context;
         this.mView = view;
-        this.mConfig = configuration;
 
         initViews();
 
-        if (mConfig.showAds()){
+        if (showAds()){
             loadAds();
         }
     }
@@ -124,6 +122,16 @@ public class CategoryListPresenterImpl implements CategoryListPresenter {
     @Override
     public void setOnCategorySelectedListener(OnCategorySelectedListener listener) {
         mCategorySelectedListener = listener;
+    }
+
+    @Override
+    public void setShowAds(boolean showAds) {
+        mShowAds = showAds;
+    }
+
+    @Override
+    public boolean showAds() {
+        return mShowAds;
     }
 
     public void loadAds() {
