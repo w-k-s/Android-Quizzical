@@ -2,6 +2,7 @@ package com.asfour.application;
 
 import android.app.Application;
 
+import com.asfour.api.QuizzicalApi;
 import com.asfour.component.AppComponent;
 import com.asfour.component.DaggerAppComponent;
 import com.asfour.modules.ApiModule;
@@ -16,13 +17,6 @@ import net.danlew.android.joda.JodaTimeAndroid;
  */
 public class App extends Application {
 
-    public static class Extras {
-        public static final String Category = "com.asfour.extras.category";
-        public static final String Categories = "com.asfour.extras.categories";
-        public static final String Questions = "com.asfour.extras.questions";
-        public static final String Quiz = "com.asfour.extras.quiz";
-        public static final String Score = "com.asfour.extras.score";
-    }
 
     private static final String TAG = App.class.getSimpleName();
     private static AppComponent mAppComponent;
@@ -51,7 +45,9 @@ public class App extends Application {
                 .configModule(new ConfigModule())
                 .apiModule(new ApiModule())
                 .build();
+
     }
+
 
     public static AppComponent component(){
         return mAppComponent;

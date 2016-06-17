@@ -6,21 +6,24 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
+import com.asfour.Extras;
 import com.asfour.R;
 import com.asfour.api.QuizzicalApi;
-import com.asfour.api.params.QuestionParameters;
 import com.asfour.application.App;
 import com.asfour.application.Configuration;
+import com.asfour.models.ApiResponse;
 import com.asfour.models.Category;
 import com.asfour.models.Question;
-import com.asfour.models.Questions;
 import com.asfour.models.Quiz;
 import com.asfour.presenters.QuizPresenter;
 import com.asfour.presenters.impl.QuizPresenterImpl;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import rx.Observable;
+import rx.Subscription;
 import rx.android.app.AppObservable;
 import rx.functions.Action1;
 
@@ -32,28 +35,22 @@ public class QuizActivity extends BaseActivity implements QuizPresenter.OnAnswer
     private QuizPresenter mQuizPresenter;
     private Quiz mQuiz;
     private Category mCategory;
+    private Subscription mQuestionsSubscription;
 
-    @Inject
-    public QuizzicalApi mQuizzicalApi;
-
-    @Inject
-    public Configuration mConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_question);
 
-        App.component().inject(this);
-
         if (savedInstanceState != null) {
 
-            mCategory = savedInstanceState.getParcelable(App.Extras.Category);
-            mQuiz = savedInstanceState.getParcelable(App.Extras.Quiz);
+            mCategory = savedInstanceState.getParcelable(Extras.Category);
+            mQuiz = savedInstanceState.getParcelable(Extras.Quiz);
 
         } else if (getIntent().getExtras() != null) {
 
-            mCategory = getIntent().getExtras().getParcelable(App.Extras.Category);
+            mCategory = getIntent().getExtras().getParcelable(Extras.Category);
 
         }
 
@@ -80,8 +77,8 @@ public class QuizActivity extends BaseActivity implements QuizPresenter.OnAnswer
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable(App.Extras.Category, mCategory);
-        outState.putParcelable(App.Extras.Quiz, mQuiz);
+        outState.putParcelable(Extras.Category, mCategory);
+        outState.putParcelable(Extras.Quiz, mQuiz);
     }
 
     @Override
@@ -106,24 +103,25 @@ public class QuizActivity extends BaseActivity implements QuizPresenter.OnAnswer
 
         mQuizPresenter.showProgress();
 
-        Observable<Questions> questionsObservable = mQuizzicalApi.getQuestions(
-                new QuestionParameters(mCategory,mConfig.getNumQuestionsInQuiz())
+        Observable<ApiResponse<List<Question>>> questionsObservable = getQuizzicalApi().getQuestions(
+                mCategory.getName(),getConfig().getNumQuestionsInQuiz()
         );
 
-        mCompositeSubscription.add(AppObservable.bindActivity(this, questionsObservable)
-                .subscribe(new Action1<Questions>() {
+        mQuestionsSubscription = AppObservable.bindActivity(this, questionsObservable)
+                .subscribe(new Action1<ApiResponse<List<Question>>>() {
                     @Override
-                    public void call(Questions questions) {
+                    public void call(ApiResponse<List<Question>> questions) {
+                        getSubscriptions().remove(mQuestionsSubscription);
 
                         mQuizPresenter.dismissProgress();
-                        mQuiz = new Quiz(mCategory, questions);
+                        mQuiz = new Quiz(mCategory, questions.getData());
                         startQuiz();
                     }
 
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-
+                        getSubscriptions().remove(mQuestionsSubscription);
                         Log.e(TAG, "" + throwable);
 
                         mQuizPresenter.dismissProgress();
@@ -139,8 +137,8 @@ public class QuizActivity extends BaseActivity implements QuizPresenter.OnAnswer
                         );
 
                     }
-                }));
-
+                });
+        getSubscriptions().add(mQuestionsSubscription);
     }
 
     @Override
@@ -152,7 +150,7 @@ public class QuizActivity extends BaseActivity implements QuizPresenter.OnAnswer
             mQuiz.incrementScore();
         }
 
-        runAfterDelay(mConfig.getDelayBeforeNextQuestion(),mQuiz.hasNext()? mNextQuestionRunnable : mShowScoresRunnable);
+        runAfterDelay(getConfig().getDelayBeforeNextQuestion(),mQuiz.hasNext()? mNextQuestionRunnable : mShowScoresRunnable);
     }
 
     private void runAfterDelay(long delay,Runnable runnable) {
@@ -173,7 +171,7 @@ public class QuizActivity extends BaseActivity implements QuizPresenter.OnAnswer
         @Override
         public void run() {
             Intent intent = new Intent(QuizActivity.this, ScoreActivity.class);
-            intent.putExtra(App.Extras.Score, mQuiz.getScore());
+            intent.putExtra(Extras.Score, mQuiz.getScore());
 
             startActivity(intent);
             finish();

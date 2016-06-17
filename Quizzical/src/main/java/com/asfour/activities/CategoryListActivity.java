@@ -2,17 +2,21 @@ package com.asfour.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 
+import com.asfour.Extras;
 import com.asfour.R;
 import com.asfour.api.QuizzicalApi;
-import com.asfour.api.params.CategoryParameters;
 import com.asfour.application.App;
 import com.asfour.application.Configuration;
-import com.asfour.models.Categories;
+import com.asfour.models.ApiResponse;
 import com.asfour.models.Category;
 import com.asfour.presenters.CategoryListPresenter;
 import com.asfour.presenters.CategoryListPresenter.OnCategorySelectedListener;
 import com.asfour.presenters.impl.CategoryListPresenterImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -33,14 +37,8 @@ public class CategoryListActivity extends BaseActivity implements OnCategorySele
     static final String TAG = CategoryListActivity.class.getSimpleName();
 
     private CategoryListPresenter mCategoryListPresenter;
-    private Categories mCategories;
+    private List<Category> mCategories;
     private Subscription mCategoriesSubscription;
-
-    @Inject
-    public QuizzicalApi mQuizzicalApi;
-
-    @Inject
-    public Configuration mConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +49,11 @@ public class CategoryListActivity extends BaseActivity implements OnCategorySele
         App.component().inject(this);
 
         if (savedInstanceState != null) {
-            mCategories = savedInstanceState.getParcelable(App.Extras.Categories);
+            mCategories = savedInstanceState.getParcelableArrayList(Extras.Categories);
         }
-
         mCategoryListPresenter = new CategoryListPresenterImpl(this, findViewById(android.R.id.content));
         mCategoryListPresenter.setOnCategorySelectedListener(this);
-        mCategoryListPresenter.setShowAds(mConfig.showAds());
+        mCategoryListPresenter.setShowAds(getConfig().showAds());
     }
 
     @Override
@@ -74,25 +71,27 @@ public class CategoryListActivity extends BaseActivity implements OnCategorySele
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable(App.Extras.Categories, mCategories);
+        if (mCategories != null) {
+            outState.putParcelableArrayList(Extras.Categories, new ArrayList<Parcelable>(mCategories));
+        }
     }
 
     private void loadCategories() {
 
         mCategoryListPresenter.showProgressbar();
 
-        Observable<Categories> categoriesObservable = mQuizzicalApi.getCategories(new CategoryParameters());
+        Observable<ApiResponse<List<Category>>> categoriesObservable = getQuizzicalApi().getCategories();
 
-        mCategoriesSubscription = AppObservable.bindActivity(this, categoriesObservable)
-                .subscribe(new Action1<Categories>() {
+        mCategoriesSubscription  = AppObservable.bindActivity(this, categoriesObservable)
+                .subscribe(new Action1<ApiResponse<List<Category>>>() {
 
                     @Override
-                    public void call(Categories categories) {
+                    public void call(ApiResponse<List<Category>> categories) {
 
-                        mCategories = categories;
+                        mCategories = categories.getData();
                         mCategoryListPresenter.hideProgressbar();
-                        mCategoryListPresenter.showCategories(categories);
-                        mCompositeSubscription.remove(mCategoriesSubscription);
+                        mCategoryListPresenter.showCategories(mCategories);
+                        getSubscriptions().remove(mCategoriesSubscription);
 
                     }
 
@@ -104,18 +103,18 @@ public class CategoryListActivity extends BaseActivity implements OnCategorySele
                         String message = getString(R.string.err_fetching_categories);
 
                         if ((throwable instanceof RetrofitError)
-                                && getStatusCode((RetrofitError)throwable) == 401){
+                                && getStatusCode((RetrofitError) throwable) == 401) {
 
                             message = getString(R.string.user_message_token_expired);
                         }
 
                         mCategoryListPresenter.showError(message);
-                        mCompositeSubscription.remove(mCategoriesSubscription);
+                        getSubscriptions().remove(mCategoriesSubscription);
 
                     }
 
                 });
-        mCompositeSubscription.add(mCategoriesSubscription);
+        getSubscriptions().add(mCategoriesSubscription);
     }
 
     private int getStatusCode(RetrofitError error){
@@ -127,7 +126,7 @@ public class CategoryListActivity extends BaseActivity implements OnCategorySele
     public void onCategorySelected(Category category) {
 
         Intent intent = new Intent(CategoryListActivity.this, QuizActivity.class);
-        intent.putExtra(App.Extras.Category, category);
+        intent.putExtra(Extras.Category, category);
 
         startActivity(intent);
 

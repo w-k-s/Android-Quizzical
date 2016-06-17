@@ -2,9 +2,14 @@ package com.asfour.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+
+import rx.android.internal.Preconditions;
 
 /**
  * Created by Waqqas on 03/07/15.
@@ -23,15 +28,17 @@ public class Quiz implements Parcelable, Iterator<Question> {
     };
 
     private Category category;
-    private Questions questions;
+    private List<Question> questions;
     private QuizScore score;
     private int currentQuestionIndex;
 
-    public Quiz(Category category, Questions questions) {
+    public Quiz(@NonNull final Category category, @NonNull final List<Question> questions) {
+        Preconditions.checkNotNull(category, "Category must not be null");
+        Preconditions.checkNotNull(questions,"Questions must not be null.");
 
         this.category = category;
         this.questions = questions;
-        this.score = new QuizScore(questions.getQuestions().size());
+        this.score = new QuizScore(questions.size());
         this.currentQuestionIndex = -1;
 
     }
@@ -39,7 +46,8 @@ public class Quiz implements Parcelable, Iterator<Question> {
     public Quiz(final Parcel in) {
 
         category = in.readParcelable(Category.class.getClassLoader());
-        questions = in.readParcelable(Question.class.getClassLoader());
+        questions = new ArrayList<>();
+        in.readList(questions,Question.class.getClassLoader());
         score = in.readParcelable(QuizScore.class.getClassLoader());
         currentQuestionIndex = in.readInt();
     }
@@ -62,7 +70,7 @@ public class Quiz implements Parcelable, Iterator<Question> {
 
     public void shuffle() {
         reset();
-        Collections.shuffle(questions.getQuestions());
+        Collections.shuffle(questions);
     }
 
     public Question getCurrentQuestion() {
@@ -70,17 +78,17 @@ public class Quiz implements Parcelable, Iterator<Question> {
             next();
         }
 
-        return this.questions.getQuestions().get(currentQuestionIndex);
+        return this.questions.get(currentQuestionIndex);
     }
 
     @Override
     public boolean hasNext() {
-        return (this.currentQuestionIndex + 1) < this.questions.getQuestions().size();
+        return (this.currentQuestionIndex + 1) < this.questions.size();
     }
 
     @Override
     public Question next() {
-        return this.questions.getQuestions().get(++currentQuestionIndex);
+        return this.questions.get(++currentQuestionIndex);
     }
 
     @Override
@@ -91,7 +99,7 @@ public class Quiz implements Parcelable, Iterator<Question> {
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeParcelable(category, flags);
-        parcel.writeParcelable(questions, flags);
+        parcel.writeList(questions);
         parcel.writeParcelable(score, flags);
         parcel.writeInt(currentQuestionIndex);
     }

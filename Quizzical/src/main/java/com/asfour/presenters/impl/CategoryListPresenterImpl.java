@@ -12,13 +12,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.asfour.R;
-import com.asfour.application.Configuration;
-import com.asfour.models.Categories;
 import com.asfour.models.Category;
 import com.asfour.utils.AdMobUtils;
 import com.asfour.presenters.CategoryListPresenter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -98,12 +98,12 @@ public class CategoryListPresenterImpl implements CategoryListPresenter {
     }
 
     @Override
-    public void showCategories(final Categories categories) {
+    public void showCategories(final List<Category> categories) {
 
         mCategoriesListView.setAdapter(new ArrayAdapter<Category>(
                 mContext,
                 android.R.layout.simple_list_item_1,
-                categories.getCategories()) {
+                categories) {
 
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {

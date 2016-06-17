@@ -1,7 +1,8 @@
 package com.asfour.presenters;
 
-import com.asfour.models.Categories;
 import com.asfour.models.Category;
+
+import java.util.List;
 
 /**
  * Created by Waqqas on 02/07/15.
@@ -19,7 +20,7 @@ public interface CategoryListPresenter {
 
     public void hideProgressbar();
 
-    public void showCategories(Categories categories);
+    public void showCategories(List<Category> categories);
 
     public void showError(String message);
 

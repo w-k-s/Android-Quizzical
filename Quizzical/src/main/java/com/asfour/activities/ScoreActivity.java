@@ -3,6 +3,7 @@ package com.asfour.activities;
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.asfour.Extras;
 import com.asfour.R;
 import com.asfour.application.App;
 import com.asfour.application.Configuration;
@@ -18,12 +19,10 @@ import javax.inject.Inject;
  *
  * @author Waqqas
  */
-public class ScoreActivity extends Activity {
+public class ScoreActivity extends BaseActivity {
     private ScorePresenter mScorePresenter;
     private QuizScore mQuizScore;
 
-    @Inject
-    public Configuration mConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,19 +30,17 @@ public class ScoreActivity extends Activity {
         this.setContentView(R.layout.layout_score);
 
         if (savedInstanceState != null) {
-            mQuizScore = savedInstanceState.getParcelable(App.Extras.Score);
+            mQuizScore = savedInstanceState.getParcelable(Extras.Score);
         } else if (getIntent().getExtras() != null) {
-            mQuizScore = getIntent().getExtras().getParcelable(App.Extras.Score);
+            mQuizScore = getIntent().getExtras().getParcelable(Extras.Score);
         }
-
-        App.component().inject(this);
 
         if (mQuizScore == null) {
             finish();
         } else {
             mScorePresenter = new ScorePresenterImpl(this, findViewById(android.R.id.content));
-            mScorePresenter.setShowAds(mConfig.showAds());
-            mScorePresenter.setMillisecondsDelayBeforeDisplayingAd(mConfig.getDelayBeforeDisplayInterstitialAds());
+            mScorePresenter.setShowAds(getConfig().showAds());
+            mScorePresenter.setMillisecondsDelayBeforeDisplayingAd(getConfig().getDelayBeforeDisplayInterstitialAds());
             mScorePresenter.showScore(mQuizScore);
         }
 
@@ -53,6 +50,6 @@ public class ScoreActivity extends Activity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable(App.Extras.Score, mQuizScore);
+        outState.putParcelable(Extras.Score, mQuizScore);
     }
 }

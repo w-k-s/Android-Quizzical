@@ -1,5 +1,6 @@
 package com.asfour.component;
 
+import com.asfour.activities.BaseActivity;
 import com.asfour.activities.CategoryListActivity;
 import com.asfour.activities.QuizActivity;
 import com.asfour.activities.ScoreActivity;
@@ -18,7 +19,5 @@ import dagger.Component;
 @Component(modules = {ApiModule.class, AppModule.class, ConfigModule.class})
 public interface AppComponent {
 
-    void inject(CategoryListActivity categoryListActivity);
-    void inject(QuizActivity quizActivity);
-    void inject(ScoreActivity scoreActivity);
+    void inject(BaseActivity categoryListActivity);
 }

@@ -3,13 +3,11 @@ package com.asfour.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by Waqqas on 02/07/15.
  */
-@Root(strict = false)
 public class Category implements Parcelable {
 
     public static final Parcelable.Creator<Category> CREATOR
@@ -23,7 +21,7 @@ public class Category implements Parcelable {
         }
     };
 
-    @Element(name = "Name")
+    @SerializedName("Name")
     private String name;
 
     private Category() {

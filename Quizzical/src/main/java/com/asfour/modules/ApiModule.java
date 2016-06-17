@@ -1,25 +1,30 @@
 package com.asfour.modules;
 
 import android.app.Application;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.asfour.api.QuizzicalApi;
-import com.mobprofs.retrofit.converters.SimpleXmlConverter;
+import com.asfour.application.TokenManager;
+import com.google.gson.Gson;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import retrofit.Endpoint;
 import retrofit.Endpoints;
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.client.Client;
 import retrofit.client.OkClient;
+import retrofit.converter.GsonConverter;
 
 /**
  * Created by Waqqas on 15/07/15.
@@ -28,7 +33,7 @@ import retrofit.client.OkClient;
 public class ApiModule {
 
     private static final String TAG = "ApiModule";
-    private static final String QUIZZICAL_API_URL = "http://asfour-quizzical.appspot.com";
+    private static final String QUIZZICAL_API_URL = "https://asfour-quizzical.appspot.com";
 
     private static final long CONNECTION_TIMEOUT_MILLIS = 2 * 60 * 1000;//2 minutes
     private static final String CACHE_DIR_NAME = "http-cache";
@@ -57,13 +62,27 @@ public class ApiModule {
         return new OkClient(client);
     }
 
+    @Inject
     @Provides
     @Singleton
-    RestAdapter provideRestAdapter(Client client, Endpoint endpoint){
+    RestAdapter provideRestAdapter(final Application app, Client client, Endpoint endpoint){
+        RequestInterceptor interceptor = new RequestInterceptor() {
+            @Override
+            public void intercept(RequestFacade request) {
+
+                if (!TextUtils.isEmpty(TokenManager.getToken(app))){
+                    request.addHeader("Authorization",String.format(
+                            "Bearer %s",TokenManager.getToken(app)
+                    ));
+                }
+            }
+        };
+
         return new RestAdapter.Builder()
                 .setEndpoint(endpoint)
+                .setRequestInterceptor(interceptor)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
-                .setConverter(new SimpleXmlConverter())
+                .setConverter(new GsonConverter(new Gson()))
                 .setClient(client)
                 .build();
     }

@@ -3,7 +3,8 @@ package com.asfour.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.common.base.Preconditions;
+
+import rx.android.internal.Preconditions;
 
 /**
  * Created by Waqqas on 03/07/15.
@@ -39,7 +40,7 @@ public class QuizScore implements Parcelable {
     public void increment() {
         Preconditions.checkArgument(
                 (score + 1) <= maxScore,
-                "Score: %d can not exceed max: %d", score, maxScore
+                String.format("Score: %d can not exceed max: %d", score, maxScore)
         );
 
         ++score;

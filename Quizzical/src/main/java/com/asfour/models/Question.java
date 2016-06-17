@@ -3,16 +3,13 @@ package com.asfour.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
-import org.simpleframework.xml.Root;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Multiple Choice Question Objects.
  *
  * @author Waqqas
  */
-@Root(strict = false)
 public class Question implements Parcelable {
     public static final Parcelable.Creator<Question> CREATOR
             = new Parcelable.Creator<Question>() {
@@ -30,22 +27,22 @@ public class Question implements Parcelable {
     public static final String OPTION_C = "C";
     public static final String OPTION_D = "D";
 
-    @Element(name = "ask")
+    @SerializedName("Question")
     private String text;
 
-    @Attribute(name = "correct")
+    @SerializedName("Answer")
     private String answer;
 
-    @Element(name = "A")
+    @SerializedName("A")
     private String a;
 
-    @Element(name = "B")
+    @SerializedName("B")
     private String b;
 
-    @Element(name = "C")
+    @SerializedName("C")
     private String c;
 
-    @Element(name = "D")
+    @SerializedName("D")
     private String d;
 
     private Question() {

@@ -1,11 +1,14 @@
 package com.asfour.api;
+import com.asfour.models.ApiResponse;
+import com.asfour.models.Category;
+import com.asfour.models.Question;
+import com.asfour.models.Token;
 
-import com.asfour.api.params.CategoryParameters;
-import com.asfour.api.params.QuestionParameters;
-import com.asfour.models.Categories;
-import com.asfour.models.Questions;
+import java.util.List;
 
+import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.POST;
 import retrofit.http.Query;
 import rx.Observable;
 
@@ -15,9 +18,14 @@ import rx.Observable;
 public interface QuizzicalApi {
 
 
-    @GET("/api/categories")
-    public Observable<Categories> getCategories(@Query("token") CategoryParameters params);
+    @POST("/api/v2/auth?sub=com.asfour.Quizzical")
+    public Observable<ApiResponse<Token>> getSessionToken(@Body Object body);
 
-    @GET("/api/questions")
-    public Observable<Questions> getQuestions(@Query("token") QuestionParameters params);
+    @GET("/api/v2/categories")
+    public Observable<ApiResponse<List<Category>>> getCategories();
+
+    @GET("/api/v2/questions")
+    public Observable<ApiResponse<List<Question>>> getQuestions(
+            @Query("category") String category,
+            @Query("size") int pageSize);
 }
