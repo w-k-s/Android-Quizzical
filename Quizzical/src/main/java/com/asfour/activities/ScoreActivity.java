@@ -1,17 +1,12 @@
 package com.asfour.activities;
 
-import android.app.Activity;
 import android.os.Bundle;
 
 import com.asfour.Extras;
 import com.asfour.R;
-import com.asfour.application.App;
-import com.asfour.application.Configuration;
-import com.asfour.models.QuizScore;
+import com.asfour.data.quiz.QuizScore;
 import com.asfour.presenters.ScorePresenter;
 import com.asfour.presenters.impl.ScorePresenterImpl;
-
-import javax.inject.Inject;
 
 
 /**
@@ -39,8 +34,6 @@ public class ScoreActivity extends BaseActivity {
             finish();
         } else {
             mScorePresenter = new ScorePresenterImpl(this, findViewById(android.R.id.content));
-            mScorePresenter.setShowAds(getConfig().showAds());
-            mScorePresenter.setMillisecondsDelayBeforeDisplayingAd(getConfig().getDelayBeforeDisplayInterstitialAds());
             mScorePresenter.showScore(mQuizScore);
         }
 

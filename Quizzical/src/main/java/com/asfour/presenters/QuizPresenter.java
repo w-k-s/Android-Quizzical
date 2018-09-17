@@ -2,29 +2,23 @@ package com.asfour.presenters;
 
 import android.content.DialogInterface;
 
-import com.asfour.models.Question;
-
-import java.util.List;
-
 /**
  * Created by Waqqas on 03/07/15.
  */
 public interface QuizPresenter {
-    public static interface OnAnswerSelectedListener {
-        public void onAnswerSelected(String answer);
+    interface OnAnswerSelectedListener {
+        void onAnswerSelected(String answer);
     }
 
-    public void showQuestion(Question question);
+    void showAnswers(String correct, String userAnswer);
 
-    public void showAnswers(String correct, String userAnswer);
+    void setOnAnswerSelectedListener(OnAnswerSelectedListener listener);
 
-    public void setOnAnswerSelectedListener(OnAnswerSelectedListener listener);
+    void showProgress();
 
-    public void showProgress();
+    void dismissProgress();
 
-    public void dismissProgress();
+    void showDownloadingError(String error, DialogInterface.OnClickListener listener);
 
-    public void showDownloadingError(String error, DialogInterface.OnClickListener listener);
-
-    public void dismissDownlaodErrorDialog();
+    void dismissDownlaodErrorDialog();
 }

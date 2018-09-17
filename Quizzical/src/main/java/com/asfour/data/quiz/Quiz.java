@@ -1,8 +1,11 @@
-package com.asfour.models;
+package com.asfour.data.quiz;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+
+import com.asfour.data.questions.Question;
+import com.asfour.data.categories.Category;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +41,7 @@ public class Quiz implements Parcelable, Iterator<Question> {
 
         this.category = category;
         this.questions = questions;
-        this.score = new QuizScore(questions.size());
+        this.score = new QuizScore(0,questions.size());
         this.currentQuestionIndex = -1;
 
     }
@@ -57,7 +60,7 @@ public class Quiz implements Parcelable, Iterator<Question> {
     }
 
     public void incrementScore() {
-        score.increment();
+        //score.increment();
     }
 
     public QuizScore getScore() {

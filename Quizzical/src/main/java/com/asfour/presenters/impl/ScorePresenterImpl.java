@@ -3,21 +3,16 @@ package com.asfour.presenters.impl;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.asfour.R;
-import com.asfour.application.Configuration;
-import com.asfour.models.QuizScore;
-import com.asfour.utils.AdMobUtils;
+import com.asfour.data.quiz.QuizScore;
 import com.asfour.presenters.ScorePresenter;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -34,11 +29,9 @@ public class ScorePresenterImpl implements ScorePresenter {
 
     private static final long MILLISECONDS_PER_TICK = 50;
 
-    private InterstitialAd mInterstitialAd;
-
-    @Bind(R.id.textview_score_heading) TextView mHeadingTextView;
-    @Bind(R.id.textview_score) TextView mScoreTextView;
-    @Bind(R.id.textview_grade) TextView mGradeTextView;
+    @BindView(R.id.textview_score_heading) TextView mHeadingTextView;
+    @BindView(R.id.textview_score) TextView mScoreTextView;
+    @BindView(R.id.textview_grade) TextView mGradeTextView;
     private int[] mColors;
 
     public ScorePresenterImpl(Context context, View view) {
@@ -46,10 +39,6 @@ public class ScorePresenterImpl implements ScorePresenter {
         mView = view;
 
         mColors = mContext.getResources().getIntArray(R.array.grade_colors);
-
-        if (showAds()) {
-            loadAds();
-        }
 
         initViews();
     }
@@ -129,63 +118,7 @@ public class ScorePresenterImpl implements ScorePresenter {
         public void onAnimationRepeat(Animation animation) {}
 
         @Override
-        public void onAnimationEnd(Animation animation) {
-
-            if (showAds() && mInterstitialAd.isLoaded()){
-                showAdAfterDelay(getMillisecondsDelayBeforeDisplayingAd());
-            }
-
-        }
+        public void onAnimationEnd(Animation animation) { }
     };
-
-    @Override
-    public void setShowAds(boolean showAds) {
-        mShowAds = showAds;
-    }
-
-    @Override
-    public boolean showAds() {
-        return mShowAds;
-    }
-
-    @Override
-    public void setMillisecondsDelayBeforeDisplayingAd(long millisecondsDelay) {
-        mAdDelayMillis = millisecondsDelay;
-    }
-
-    @Override
-    public long getMillisecondsDelayBeforeDisplayingAd() {
-        return mAdDelayMillis;
-    }
-
-    private void loadAds() {
-        mInterstitialAd = new InterstitialAd(mContext);
-        mInterstitialAd.setAdUnitId(mContext.getString(R.string.score_ad_unit_id));
-
-        requestNewInterstitial();
-
-    }
-
-    private void requestNewInterstitial() {
-        AdRequest adRequest = AdMobUtils.newAdRequestBuilder().build();
-        mInterstitialAd.loadAd(adRequest);
-    }
-
-    private void showAdAfterDelay(long delay) {
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-
-                mInterstitialAd.show();
-
-            }
-        }, delay);
-
-
-    }
-
 
 }

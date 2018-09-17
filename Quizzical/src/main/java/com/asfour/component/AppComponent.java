@@ -1,9 +1,6 @@
 package com.asfour.component;
 
 import com.asfour.activities.BaseActivity;
-import com.asfour.activities.CategoryListActivity;
-import com.asfour.activities.QuizActivity;
-import com.asfour.activities.ScoreActivity;
 import com.asfour.modules.ApiModule;
 import com.asfour.modules.AppModule;
 import com.asfour.modules.ConfigModule;
