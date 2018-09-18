@@ -38,29 +38,38 @@ configurations {
 }
 
 dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
-    def supportVersion = '28.0.0-rc02'
+    compile 'com.facebook.stetho:stetho:1.5.0'
 
+    implementation "com.android.support:support-annotations:$rootProject.supportVersion"
+    implementation "com.android.support:recyclerview-v7:$rootProject.supportVersion"
+    implementation "com.android.support:appcompat-v7:$rootProject.supportVersion"
 
-    implementation "com.android.support:support-annotations:$supportVersion"
-    implementation "com.android.support:recyclerview-v7:$supportVersion"
-    implementation "com.android.support:appcompat-v7:$supportVersion"
+    implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
+    kapt "android.arch.persistence.room:compiler:$rootProject.roomVersion"
+    implementation "android.arch.persistence.room:rxjava2:1.1.1"
+
+    implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
+    kapt "android.arch.lifecycle:compiler:$rootProject.archLifecycleVersion"
+
     implementation 'com.google.code.gson:gson:2.8.2'
+
+    implementation "io.reactivex.rxjava2:rxjava:2.2.2"
+    implementation "io.reactivex.rxjava2:rxandroid:2.0.2"
+
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.4.0'
+    implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
+
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
 
-    implementation 'android.arch.lifecycle:extensions:1.1.1'
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     // Needed for dagger 2
     implementation 'com.google.dagger:dagger:2.0.1'
     kapt "com.google.dagger:dagger-compiler:2.0.1"
     implementation 'javax.annotation:jsr250-api:1.0'
-    // Needed specifically for annotations in Java 1.6
-    implementation 'com.jakewharton:butterknife:8.8.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
     testImplementation('org.powermock:powermock-api-mockito:1.6.2') {
         exclude module: 'hamcrest-core'

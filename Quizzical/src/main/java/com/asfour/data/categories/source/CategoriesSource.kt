@@ -2,30 +2,38 @@ package com.asfour.data.categories.source
 
 import com.asfour.data.api.QuizzicalApi
 import com.asfour.data.categories.Categories
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.asfour.data.persistence.dao.CategoryDao
+import com.asfour.data.persistence.entities.CategoryEntity
+import io.reactivex.Completable
+import io.reactivex.Single
 
-interface CategoriesDataSource {
-    fun loadCategories(onSuccess: (Categories) -> Unit,
-                       onError: (Throwable) -> Unit)
+
+class CategoriesRemoteDataSource(private val api: QuizzicalApi) {
+    fun loadCategories(): Single<Categories> = api.categories.toSingle()
 }
 
-class CategoriesRemoteDataSource(private val api: QuizzicalApi) : CategoriesDataSource {
+class CategoriesLocalDataSource(private val categoryDao: CategoryDao) {
 
-    override fun loadCategories(onSuccess: (Categories) -> Unit, onError: (Throwable) -> Unit) {
-        api.categories.enqueue(object: Callback<Categories>{
-            override fun onFailure(call: Call<Categories>?, t: Throwable?) {
-                onError(t!!)
-            }
+    fun fetchCategories(): Single<Categories> = categoryDao.list()
+            .filter { !it.isEmpty() }
+            .map { it.map { it.toCategory() }.toList() }
+            .map { Categories(it) }
+            .toSingle()
 
-            override fun onResponse(call: Call<Categories>?, response: Response<Categories>?) {
-                onSuccess(response!!.body()!!)
-            }
-        })
+    fun saveCategories(categories: Categories) = Completable.fromCallable {
+        categoryDao.insert(categories.map { CategoryEntity(it) }.toList())
     }
+
 }
 
-class CategoriesRepository(private val remoteSource: CategoriesDataSource) : CategoriesDataSource {
-    override fun loadCategories(onSuccess: (Categories) -> Unit, onError: (Throwable) -> Unit) = remoteSource.loadCategories(onSuccess, onError)
+class CategoriesRepository(private val remoteDataSource: CategoriesRemoteDataSource,
+                           private val localDataSource: CategoriesLocalDataSource) {
+
+    fun categories(): Single<Categories> {
+        return localDataSource.fetchCategories()
+                .onErrorResumeNext(
+                        remoteDataSource.loadCategories().flatMap {
+                            localDataSource.saveCategories(it).andThen(Single.just(it))
+                        })
+    }
 }

@@ -6,6 +6,8 @@ import com.asfour.data.questions.Question;
 
 import java.util.List;
 
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -16,7 +18,7 @@ import retrofit2.http.Query;
 public interface QuizzicalApi {
 
     @GET("/api/v3/categories")
-    Call<Categories> getCategories();
+    Maybe<Categories> getCategories();
 
     @GET("/api/v3/questions")
     Call<ApiResponse<List<Question>>> getQuestions(

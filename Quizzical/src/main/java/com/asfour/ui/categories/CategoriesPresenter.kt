@@ -1,30 +1,32 @@
 package com.asfour.ui.categories
 
-import com.asfour.data.categories.Categories
 import com.asfour.data.categories.Category
 import com.asfour.data.categories.source.CategoriesRepository
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 /**
  * Created by Waqqas on 02/07/15.
  */
 class CategoriesPresenter(private var view: CategoriesContract.View?,
-                          private val categoriesRespository: CategoriesRepository) : CategoriesContract.Presenter {
+                          private val categoriesRepository: CategoriesRepository) : CategoriesContract.Presenter {
+
+    private val disposable = CompositeDisposable()
 
     override fun loadCategories() {
 
         view?.setProgressIndicator(true)
 
-        categoriesRespository.loadCategories(onSuccess = {
-
+        disposable.add(categoriesRepository.categories()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
             view?.setProgressIndicator(false)
             view?.showCategories(it)
-
-        }, onError = {
-
-            view?.setProgressIndicator(false)
-            view?.showError(it.message ?: "")
-
-        })
+        },{
+            view?.showError(it?.message ?: "Unknwon Error")
+        }))
     }
 
     override fun onCategorySelected(category: Category) {
@@ -32,6 +34,7 @@ class CategoriesPresenter(private var view: CategoriesContract.View?,
     }
 
     override fun dropView() {
+        disposable.dispose()
         view = null
     }
 }
