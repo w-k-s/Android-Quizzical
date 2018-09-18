@@ -6,8 +6,8 @@
 - [x] Save categories to Room
 - [x] Load categories through room
 - [ ] Display categories using livedata and viewmodel
-- [ ] Set timeout on loading categories from db
-- [ ] cache categories in memory
+- [x] Set timeout on loading categories from db
+- [x] cache categories in memory
 
 - [ ] load paginated questions
 - [ ] save questions to room

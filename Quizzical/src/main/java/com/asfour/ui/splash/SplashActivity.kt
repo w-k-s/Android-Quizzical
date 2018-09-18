@@ -19,4 +19,8 @@ class SplashActivity : BaseActivity() {
         startActivity(Intent(this@SplashActivity, CategoryListActivity::class.java))
     }
 
+    override fun onPause() {
+        super.onPause()
+        finish()
+    }
 }

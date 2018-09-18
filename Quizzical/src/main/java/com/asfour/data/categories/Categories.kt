@@ -10,6 +10,7 @@ data class Category(@SerializedName("title") val title: String) : Parcelable
 @Parcelize
 data class Categories(@SerializedName("categories") val categories: List<Category> = emptyList()) : Parcelable, Iterable<Category>{
     val size get() = categories.size
+    val isEmpty get() = categories.isEmpty()
     override fun iterator(): Iterator<Category> = categories.iterator()
     operator fun get(i : Int) = categories[i]
 }

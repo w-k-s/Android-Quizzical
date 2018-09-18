@@ -2,6 +2,7 @@ package com.asfour.ui.categories
 
 import com.asfour.data.categories.Category
 import com.asfour.data.categories.source.CategoriesRepository
+import com.asfour.utils.ConnectivityAssistant
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -10,7 +11,8 @@ import io.reactivex.schedulers.Schedulers
  * Created by Waqqas on 02/07/15.
  */
 class CategoriesPresenter(private var view: CategoriesContract.View?,
-                          private val categoriesRepository: CategoriesRepository) : CategoriesContract.Presenter {
+                          private val categoriesRepository: CategoriesRepository,
+                          private val connectivity: ConnectivityAssistant) : CategoriesContract.Presenter {
 
     private val disposable = CompositeDisposable()
 
@@ -18,7 +20,7 @@ class CategoriesPresenter(private var view: CategoriesContract.View?,
 
         view?.setProgressIndicator(true)
 
-        disposable.add(categoriesRepository.categories()
+        disposable.add(categoriesRepository.categories(ignoreExpiry = !connectivity.hasNetworkConnection())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({

@@ -2,7 +2,6 @@ package com.asfour.ui.categories
 
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
@@ -14,12 +13,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.asfour.Extras
 import com.asfour.R
-import com.asfour.ui.base.BaseActivity
-import com.asfour.ui.quiz.QuizActivity
 import com.asfour.application.App
 import com.asfour.data.categories.Categories
 import com.asfour.data.categories.Category
 import com.asfour.data.categories.source.CategoriesRepository
+import com.asfour.ui.base.BaseActivity
+import com.asfour.ui.quiz.QuizActivity
+import com.asfour.utils.ConnectivityAssistant
 import com.asfour.utils.asVisibility
 import kotlinx.android.synthetic.main.layout_category_list.*
 import javax.inject.Inject
@@ -34,6 +34,10 @@ class CategoryListActivity : BaseActivity(), CategoriesContract.View {
 
     @Inject
     lateinit var categoriesRepository: CategoriesRepository
+
+    @Inject
+    lateinit var connectionAssistant: ConnectivityAssistant
+
     private var categoriesPresenter: CategoriesContract.Presenter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +47,7 @@ class CategoryListActivity : BaseActivity(), CategoriesContract.View {
 
         App.component().inject(this)
 
-        categoriesPresenter = CategoriesPresenter(this, categoriesRepository)
+        categoriesPresenter = CategoriesPresenter(this, categoriesRepository,connectionAssistant)
 
         initViews()
     }
