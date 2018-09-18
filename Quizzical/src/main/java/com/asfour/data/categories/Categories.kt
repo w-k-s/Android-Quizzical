@@ -8,4 +8,8 @@ import kotlinx.android.parcel.Parcelize
 data class Category(@SerializedName("title") val title: String) : Parcelable
 
 @Parcelize
-data class Categories(@SerializedName("categories") val categories: List<Category>) : Parcelable
+data class Categories(@SerializedName("categories") val categories: List<Category> = emptyList()) : Parcelable, Iterable<Category>{
+    val size get() = categories.size
+    override fun iterator(): Iterator<Category> = categories.iterator()
+    operator fun get(i : Int) = categories[i]
+}

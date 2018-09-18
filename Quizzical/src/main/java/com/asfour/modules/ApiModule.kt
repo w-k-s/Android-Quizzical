@@ -1,7 +1,7 @@
 package com.asfour.modules
 
 import android.app.Application
-import com.asfour.api.QuizzicalApi
+import com.asfour.data.api.QuizzicalApi
 import dagger.Module
 import dagger.Provides
 import okhttp3.Cache
@@ -36,7 +36,6 @@ class ApiModule {
                 .build()
     }
 
-    @Inject
     @Provides
     @Singleton
     fun provideRetrofit(client: OkHttpClient): Retrofit {
@@ -55,7 +54,6 @@ class ApiModule {
     }
 
     companion object {
-
         private val CACHE_DIR_NAME = "http-cache"
         private val CACHE_SIZE = (5 * 1024 * 1024).toLong() // 5 MB Cache
     }

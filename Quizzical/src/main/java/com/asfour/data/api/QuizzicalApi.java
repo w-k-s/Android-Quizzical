@@ -1,4 +1,4 @@
-package com.asfour.api;
+package com.asfour.data.api;
 
 import com.asfour.data.api.ApiResponse;
 import com.asfour.data.categories.Categories;

@@ -1,22 +1,28 @@
 package com.asfour.ui.categories
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Typeface
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
+import android.support.v4.content.res.ResourcesCompat
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import butterknife.BindView
-import butterknife.ButterKnife
+import android.widget.TextView
 import com.asfour.Extras
 import com.asfour.R
-import com.asfour.activities.BaseActivity
-import com.asfour.activities.QuizActivity
+import com.asfour.ui.base.BaseActivity
+import com.asfour.ui.quiz.QuizActivity
 import com.asfour.application.App
 import com.asfour.data.categories.Categories
 import com.asfour.data.categories.Category
-import retrofit.RetrofitError
-import rx.Subscription
+import com.asfour.data.categories.source.CategoriesRepository
+import com.asfour.utils.asVisibility
+import kotlinx.android.synthetic.main.layout_category_list.*
+import javax.inject.Inject
 
 /**
  * An activity that displays a list of quiz activities.
@@ -26,20 +32,9 @@ import rx.Subscription
  */
 class CategoryListActivity : BaseActivity(), CategoriesContract.View {
 
-    @BindView(R.id.layout_progress)
-    internal var mProgressLayout: LinearLayout? = null
-    @BindView(R.id.progressbar)
-    internal var mProgressBar: ProgressBar? = null
-    @BindView(R.id.textview_progress_message)
-    internal var mProgressMessage: TextView? = null
-    @BindView(R.id.textview_title)
-    internal var mTitleTextView: TextView? = null
-    @BindView(R.id.listview_categories)
-    internal var mCategoriesListView: ListView? = null
-
-    private var mCategoryListPresenter: CategoryListPresenter? = null
-    private var mCategories: Categories? = null
-    private var mCategoriesSubscription: Subscription? = null
+    @Inject
+    lateinit var categoriesRepository: CategoriesRepository
+    private var categoriesPresenter: CategoriesContract.Presenter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -48,111 +43,108 @@ class CategoryListActivity : BaseActivity(), CategoriesContract.View {
 
         App.component().inject(this)
 
-        if (savedInstanceState != null) {
-            mCategories = savedInstanceState.getParcelable(Extras.Categories)
-        }
-        mCategoryListPresenter = CategoriesPresenter(this, findViewById<View>(android.R.id.content))
-        mCategoryListPresenter!!.setOnCategorySelectedListener(this)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        if (mCategories != null) {
-            mCategoryListPresenter!!.showCategories(mCategories!!.categories)
-        } else {
-            loadCategories()
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        if (mCategories != null) {
-            outState.putParcelable(Extras.Categories, mCategories)
-        }
-    }
-
-
-
-    private fun getStatusCode(error: RetrofitError): Int {
-        assert(error != null)
-        return error.response.status
-    }
-
-    override fun onCategorySelected(category: Category) {
-
-        val intent = Intent(this@CategoryListActivity, QuizActivity::class.java)
-        intent.putExtra(Extras.Category, category)
-
-        startActivity(intent)
-
-    }
-
-    companion object {
-
-        internal val TAG = CategoryListActivity::class.java.simpleName
-    }
-
-    init {
+        categoriesPresenter = CategoriesPresenter(this, categoriesRepository)
 
         initViews()
     }
 
+
     private fun initViews() {
+        titleTextView.text = getString(R.string.app_name)
+        categoriesRecyclerView.adapter = CategoriesAdapter(onCategorySelected = { category ->
+            categoriesPresenter?.onCategorySelected(category)
+        })
+    }
 
-        ButterKnife.bind(this, mView)
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        updateSpanCount()
+    }
 
-        mTitleTextView!!.text = mContext.getString(R.string.app_name)
-        mTitleTextView!!.typeface = Typeface.createFromAsset(mContext.assets, "Bender-Inline.otf")
+    fun updateSpanCount(){
+        val layoutManager = (categoriesRecyclerView.layoutManager as GridLayoutManager)
 
-        mCategoriesListView!!.onItemClickListener = AdapterView.OnItemClickListener { adapterView, view, i, l ->
-            if (mCategorySelectedListener != null) {
-                val category = adapterView.adapter.getItem(i) as Category
-                mCategorySelectedListener!!.onCategorySelected(category)
-            }
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            layoutManager.spanCount = 3
+        }else{
+            layoutManager.spanCount = 1
         }
     }
 
-    fun showProgressbar() {
-        mCategoriesListView!!.visibility = View.GONE
-        mProgressLayout!!.visibility = View.VISIBLE
-        mProgressMessage!!.text = mContext.getString(R.string.downloading_categories)
+    override fun onResume() {
+        super.onResume()
+        categoriesPresenter?.loadCategories()
     }
 
-    fun hideProgressbar() {
-        mCategoriesListView!!.visibility = View.VISIBLE
-        mProgressLayout!!.visibility = View.GONE
+    override fun onDestroy() {
+        categoriesPresenter?.dropView()
+        super.onDestroy()
     }
 
-    fun showError(message: String) {
-        mCategoriesListView!!.visibility = View.GONE
-        mProgressBar!!.visibility = View.GONE
-        mProgressLayout!!.visibility = View.VISIBLE
-        mProgressMessage!!.text = message
+    override fun showCategories(categories: Categories) {
+        (categoriesRecyclerView.adapter as CategoriesAdapter).categories = categories
     }
 
-    fun showCategories(categories: List<Category>) {
+    override fun startQuiz(category: Category) {
 
-        mCategoriesListView!!.adapter = object : ArrayAdapter<Category>(
-                mContext,
-                android.R.layout.simple_list_item_1,
-                categories) {
+        val intent = Intent(this, QuizActivity::class.java)
+        intent.putExtra(Extras.Category, category)
 
-            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        startActivity(intent)
+    }
 
-                val view = super.getView(position, convertView, parent)
+    override fun setProgressIndicator(visible: Boolean) {
 
-                val tv = view.findViewById<TextView>(android.R.id.text1)
-                tv.text = getItem(position)!!.title
-                tv.setTextColor(mContext.resources.getColor(R.color.white))
+        categoriesRecyclerView.visibility = (!visible).asVisibility()
+        progressLayout.visibility = (visible).asVisibility()
 
-                return view
-            }
+        progressTextView.text = if (visible) {
+            getString(R.string.downloading_categories)
+        } else {
+            ""
         }
     }
 
-    fun setOnCategorySelectedListener(listener: OnCategorySelectedListener) {
-        mCategorySelectedListener = listener
+    override fun showError(message: String) {
+        categoriesRecyclerView.visibility = View.GONE
+        progressBar.visibility = View.GONE
+        progressLayout.visibility = View.VISIBLE
+        progressTextView.text = message
     }
+}
+
+class CategoriesAdapter(categories: Categories = Categories(),
+                        private val onCategorySelected: (Category) -> Unit) : RecyclerView.Adapter<CategoryViewHolder>() {
+
+    var categories: Categories = categories
+        set(newValue) {
+            field = newValue
+            notifyDataSetChanged()
+        }
+
+
+    override fun onCreateViewHolder(parent: ViewGroup, p1: Int): CategoryViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_1, parent, false)
+        return CategoryViewHolder(view)
+    }
+
+    override fun getItemCount(): Int = categories.size
+
+    override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) = holder.bind(categories[position], onCategorySelected)
+
+}
+
+class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+    fun bind(category: Category, onCategorySelected: (Category) -> Unit) {
+        (itemView as TextView).let {
+            it.text = category.title
+            it.typeface = ResourcesCompat.getFont(itemView.context, R.font.architects_daughter)
+            it.setTextColor(ContextCompat.getColor(itemView.context, R.color.white))
+            it.setOnClickListener({
+                onCategorySelected(category)
+            })
+        }
+    }
+
 }

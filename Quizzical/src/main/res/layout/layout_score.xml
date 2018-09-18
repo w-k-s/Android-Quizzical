@@ -2,37 +2,39 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="50dip"
     android:animateLayoutChanges="true"
-    android:background="@drawable/background_score">
+    android:background="@drawable/background_score"
+    android:padding="50dip">
 
     <TextView
-        android:id="@+id/textview_score_heading"
+        android:id="@+id/scoreHeadingTextView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/text_score_heading"
         android:gravity="center"
-        android:textSize="40dip"
-        android:textColor="@color/yellow"></TextView>
+        android:text="@string/text_score_heading"
+        android:fontFamily="@font/scribble_box_demo"
+        android:textColor="@color/yellow"
+        android:textSize="40dip" />
 
     <TextView
-        android:id="@+id/textview_score"
+        android:id="@+id/scoreTextView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="80dip"
         android:layout_centerInParent="true"
         android:gravity="center"
-        android:textColor="@color/white" />
+        android:fontFamily="@font/architects_daughter"
+        android:textColor="@color/white"
+        android:textSize="80dip" />
 
     <TextView
-        android:id="@+id/textview_grade"
+        android:id="@+id/gradeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="80dip"
-        android:textColor="@color/red"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dip"
-        android:layout_alignParentBottom="true"
-        android:visibility="invisible"></TextView>
+        android:textColor="@color/red"
+        android:fontFamily="@font/scribble_box_demo"
+        android:textSize="80dip" />
 
 </RelativeLayout>
