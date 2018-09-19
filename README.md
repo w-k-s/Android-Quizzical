@@ -9,11 +9,12 @@
 - [x] Set timeout on loading categories from db
 - [x] cache categories in memory
 
-- [ ] load paginated questions
-- [ ] save questions to room
-- [ ] load questions from room
+- [x] load questions
+- [x] save questions to room
+- [x] load questions from room
 - [ ] display questions using livedata and viewmodel
-- [ ] Set timeout on loading categories from db
+- [ ] rotate question pages
+- [ ] Set timeout on loading questions from db
 
 - [] proper error handling
 

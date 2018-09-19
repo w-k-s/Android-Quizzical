@@ -1,4 +1,4 @@
-package com.asfour.modules
+package com.asfour.di.modules
 
 import android.app.Application
 import android.content.Context

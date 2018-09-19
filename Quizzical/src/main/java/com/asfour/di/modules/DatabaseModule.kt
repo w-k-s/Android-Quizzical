@@ -1,8 +1,9 @@
-package com.asfour.modules
+package com.asfour.di.modules
 
 import android.content.Context
 import com.asfour.data.persistence.dao.AuditDao
 import com.asfour.data.persistence.dao.CategoryDao
+import com.asfour.data.persistence.dao.QuestionDao
 import com.asfour.data.persistence.db.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -19,4 +20,7 @@ class DatabaseModule {
     @Singleton
     fun providesAuditDao(context: Context): AuditDao = AppDatabase.getInstance(context).auditDao()
 
+    @Provides
+    @Singleton
+    fun provideQuestionDao(context: Context) : QuestionDao = AppDatabase.getInstance(context).questionDao()
 }

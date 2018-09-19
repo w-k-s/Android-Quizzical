@@ -1,8 +1,9 @@
-package com.asfour.modules
+package com.asfour.di.modules
 
 import com.asfour.data.categories.source.CategoriesLocalDataSource
 import com.asfour.data.categories.source.CategoriesRemoteDataSource
 import com.asfour.data.categories.source.CategoriesRepository
+import com.asfour.data.questions.source.QuestionsLocalDataSource
 import com.asfour.data.questions.source.QuestionsRemoteDataSource
 import com.asfour.data.questions.source.QuestionsRepository
 import dagger.Module
@@ -19,5 +20,6 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun providesQuestionsRepository(remoteDataSource: QuestionsRemoteDataSource) = QuestionsRepository(remoteDataSource)
+    fun providesQuestionsRepository(remoteDataSource: QuestionsRemoteDataSource,
+                                    localDataSource: QuestionsLocalDataSource) = QuestionsRepository(remoteDataSource,localDataSource)
 }

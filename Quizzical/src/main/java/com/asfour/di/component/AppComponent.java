@@ -1,11 +1,11 @@
-package com.asfour.component;
+package com.asfour.di.component;
 
-import com.asfour.modules.DataSourceModule;
-import com.asfour.modules.DatabaseModule;
-import com.asfour.modules.RepositoryModule;
-import com.asfour.ui.base.BaseActivity;
-import com.asfour.modules.ApiModule;
-import com.asfour.modules.AppModule;
+
+import com.asfour.di.modules.ApiModule;
+import com.asfour.di.modules.AppModule;
+import com.asfour.di.modules.DataSourceModule;
+import com.asfour.di.modules.DatabaseModule;
+import com.asfour.di.modules.RepositoryModule;
 import com.asfour.ui.categories.CategoryListActivity;
 import com.asfour.ui.quiz.QuizActivity;
 
@@ -26,5 +26,6 @@ import dagger.Component;
 })
 public interface AppComponent {
     void inject(CategoryListActivity categoryListActivity);
+
     void inject(QuizActivity categoryListActivity);
 }

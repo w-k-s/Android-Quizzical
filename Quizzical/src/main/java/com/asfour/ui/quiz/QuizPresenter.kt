@@ -2,31 +2,33 @@ package com.asfour.ui.quiz
 
 import com.asfour.data.categories.Category
 import com.asfour.data.questions.Choice
-import com.asfour.data.questions.Question
 import com.asfour.data.questions.source.QuestionsRepository
 import com.asfour.data.quiz.Quiz
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class QuizPresenter(private var view: QuizContract.View?,
-                    val category: Category,
-                    val quizRepository: QuestionsRepository) : QuizContract.Presenter {
+                    private val category: Category,
+                    private val quizRepository: QuestionsRepository) : QuizContract.Presenter {
 
     private var quiz: Quiz = Quiz(category, emptyList())
+    private val compositeDisposable = CompositeDisposable()
 
     override fun startQuiz() {
         view?.setProgressIndicator(true)
 
-        quizRepository.loadQuestions(category, onSuccess = {
-
-            quiz = Quiz(category, it)
-            view?.setProgressIndicator(false)
-            view?.showQuestion(quiz.next())
-
-        }, onError = {
-
-            view?.setProgressIndicator(false)
-            view?.showError(it.message ?: "Unknown Error")
-
-        })
+        compositeDisposable.add(quizRepository.loadQuestions(category)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    quiz = Quiz(category, it)
+                    view?.setProgressIndicator(false)
+                    view?.showQuestion(quiz.next())
+                }, {
+                    view?.setProgressIndicator(false)
+                    view?.showError(it.message ?: "Unknown Error")
+                }))
     }
 
     override fun onQuestionAnswered(choice: Choice) {
@@ -42,6 +44,7 @@ class QuizPresenter(private var view: QuizContract.View?,
     }
 
     override fun dropView() {
+        compositeDisposable.dispose()
         view = null
     }
 }

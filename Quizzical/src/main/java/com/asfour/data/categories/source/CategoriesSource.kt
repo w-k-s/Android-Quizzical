@@ -11,7 +11,7 @@ import io.reactivex.Single
 
 
 class CategoriesRemoteDataSource(private val api: QuizzicalApi) {
-    fun loadCategories(): Single<Categories> = api.categories.toSingle()
+    fun loadCategories(): Single<Categories> = api.categories
 }
 
 class CategoriesLocalDataSource(private val categoryDao: CategoryDao,
@@ -34,10 +34,15 @@ class CategoriesLocalDataSource(private val categoryDao: CategoryDao,
 
 
     fun saveCategories(categories: Categories) = Completable.fromCallable {
+        categoryDao.deleteAll()
         categoryDao.insert(categories.map { CategoryEntity(it) }.toList())
         auditDao.auditEntity(AuditEntity(CategoryEntity.TABLE_NAME))
     }
 
+    fun deleteCategories(): Completable = Completable.fromCallable {
+        categoryDao.deleteAll()
+        auditDao.deleteAudit(CategoryEntity.TABLE_NAME)
+    }
 }
 
 class CategoriesRepository(private val remoteDataSource: CategoriesRemoteDataSource,
@@ -54,10 +59,11 @@ class CategoriesRepository(private val remoteDataSource: CategoriesRemoteDataSou
 
         val refresh = remoteDataSource.loadCategories().flatMap {
             categories = it
-            localDataSource.saveCategories(it).andThen(Single.just(it))
+            localDataSource.saveCategories(categories)
+                    .andThen(Single.just(it))
         }
 
-        if (forceRefresh){
+        if (forceRefresh) {
             return refresh
         }
 

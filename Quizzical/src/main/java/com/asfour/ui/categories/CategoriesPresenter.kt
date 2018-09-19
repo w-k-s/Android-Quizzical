@@ -27,6 +27,7 @@ class CategoriesPresenter(private var view: CategoriesContract.View?,
             view?.setProgressIndicator(false)
             view?.showCategories(it)
         },{
+                    view?.setProgressIndicator(false)
             view?.showError(it?.message ?: "Unknwon Error")
         }))
     }

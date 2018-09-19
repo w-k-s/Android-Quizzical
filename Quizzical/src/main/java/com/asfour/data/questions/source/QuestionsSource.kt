@@ -1,37 +1,43 @@
 package com.asfour.data.questions.source
 
 import com.asfour.data.api.QuizzicalApi
-import com.asfour.data.api.ApiResponse
 import com.asfour.data.categories.Category
+import com.asfour.data.persistence.dao.QuestionDao
+import com.asfour.data.persistence.entities.QuestionEntity
 import com.asfour.data.questions.Question
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.Completable
+import io.reactivex.Single
 
-interface QuestionsSource {
-    fun loadQuestions(category: Category,
-                      onSuccess: (List<Question>) -> Unit,
-                      onError: (Throwable) -> Unit)
-}
 
-class QuestionsRemoteDataSource(val quizzicalApi: QuizzicalApi) : QuestionsSource {
+class QuestionsLocalDataSource(private val questionsDao: QuestionDao) {
 
-    override fun loadQuestions(category: Category, onSuccess: (List<Question>) -> Unit, onError: (Throwable) -> Unit) {
-        quizzicalApi.getQuestions(category.title,10).enqueue(object: Callback<ApiResponse<List<Question>>> {
-            override fun onFailure(call: Call<ApiResponse<List<Question>>>?, t: Throwable?) {
-                onError(t!!)
-            }
-
-            override fun onResponse(call: Call<ApiResponse<List<Question>>>?, response: Response<ApiResponse<List<Question>>>?) {
-                onSuccess(response!!.body()!!.data)
-            }
-
-        })
+    fun saveQuestions(questions: List<Question>) = Completable.fromCallable {
+        questionsDao.insert(questions.map { QuestionEntity(it) })
     }
+
+    fun fetchQuestions(category: Category, page: Int, size: Int) : Single<List<Question>>
+            = Single.fromCallable{ questionsDao.findQuestionsByCategory(category.title, page, size) }
+            .filter{ !it.isEmpty() }
+            .map { it.map { it.toQuestion() } }
+            .toSingle()
 }
 
-class QuestionsRepository(val remoteSource: QuestionsSource) : QuestionsSource {
-    override fun loadQuestions(category: Category, onSuccess: (List<Question>) -> Unit, onError: (Throwable) -> Unit) {
-        return remoteSource.loadQuestions(category, onSuccess, onError)
+class QuestionsRemoteDataSource(private val quizzicalApi: QuizzicalApi) {
+
+    fun loadQuestions(category: Category, page: Int, size: Int) = quizzicalApi.getQuestions(category.title, page, size)
+}
+
+class QuestionsRepository(private val remoteSource: QuestionsRemoteDataSource,
+                          private val localSource: QuestionsLocalDataSource) {
+
+    fun loadQuestions(category: Category, page: Int = 1, size: Int = 10): Single<List<Question>> {
+
+        val resumeSingleInCaseOfError =
+                remoteSource.loadQuestions(category, page, size)
+                        .map { it.data }
+                        .flatMap { localSource.saveQuestions(it).andThen(Single.just(it)) }
+
+        return localSource.fetchQuestions(category, page, size)
+                .onErrorResumeNext(resumeSingleInCaseOfError)
     }
 }

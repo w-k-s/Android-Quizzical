@@ -2,9 +2,9 @@ package com.asfour.application;
 
 import android.app.Application;
 
-import com.asfour.component.AppComponent;
-import com.asfour.component.DaggerAppComponent;
-import com.asfour.modules.AppModule;
+import com.asfour.di.component.AppComponent;
+import com.asfour.di.component.DaggerAppComponent;
+import com.asfour.di.modules.AppModule;
 import com.facebook.stetho.Stetho;
 
 /**

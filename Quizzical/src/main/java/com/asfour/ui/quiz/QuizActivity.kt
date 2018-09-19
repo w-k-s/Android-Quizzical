@@ -87,6 +87,7 @@ class QuizActivity : BaseActivity(), QuizContract.View {
         intent.putExtra(Extras.Score, quizScore)
 
         startActivity(intent)
+        finish()
     }
 
     override fun showError(message: String) {

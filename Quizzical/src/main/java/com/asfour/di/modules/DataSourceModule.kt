@@ -1,10 +1,12 @@
-package com.asfour.modules
+package com.asfour.di.modules
 
 import com.asfour.data.api.QuizzicalApi
 import com.asfour.data.categories.source.CategoriesLocalDataSource
 import com.asfour.data.categories.source.CategoriesRemoteDataSource
 import com.asfour.data.persistence.dao.AuditDao
 import com.asfour.data.persistence.dao.CategoryDao
+import com.asfour.data.persistence.dao.QuestionDao
+import com.asfour.data.questions.source.QuestionsLocalDataSource
 import com.asfour.data.questions.source.QuestionsRemoteDataSource
 import dagger.Module
 import dagger.Provides
@@ -14,11 +16,13 @@ class DataSourceModule {
 
     @Provides
     fun provideCategoriesLocalDataSource(categoryDao: CategoryDao,
-                                         auditDao: AuditDao)
-            = CategoriesLocalDataSource(categoryDao,auditDao)
+                                         auditDao: AuditDao) = CategoriesLocalDataSource(categoryDao, auditDao)
 
     @Provides
     fun provideCategoriesRemoteDataSource(api: QuizzicalApi) = CategoriesRemoteDataSource(api)
+
+    @Provides
+    fun provideQuestionsLocalDataSource(questionDao: QuestionDao) = QuestionsLocalDataSource(questionDao)
 
     @Provides
     fun provideQuestionsDataSource(api: QuizzicalApi) = QuestionsRemoteDataSource(api)

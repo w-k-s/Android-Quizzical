@@ -1,4 +1,4 @@
-package com.asfour.modules
+package com.asfour.di.modules
 
 import android.app.Application
 import com.asfour.data.api.QuizzicalApi
@@ -12,7 +12,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import javax.inject.Singleton
 
 /**

@@ -18,4 +18,7 @@ interface CategoryDao {
 
     @Query("SELECT * FROM categories ORDER BY title ASC")
     fun list() : Single<List<CategoryEntity>>
+
+    @Query("DELETE FROM categories")
+    fun deleteAll()
 }
