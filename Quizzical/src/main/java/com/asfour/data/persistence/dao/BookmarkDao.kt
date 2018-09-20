@@ -14,6 +14,6 @@ interface BookmarkDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(bookmark: BookmarkEntity)
 
-    @Query("SELECT * FROM bookmarks WHERE category = :category LIMIT 1")
+    @Query("SELECT * FROM bookmarks WHERE category = :category")
     fun findBookmarkByCategory(category: String): Maybe<BookmarkEntity>
 }

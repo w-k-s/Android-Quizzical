@@ -45,17 +45,18 @@ class QuestionsRepository(private val remoteSource: QuestionsRemoteDataSource,
                     val bookmark = it
                     localSource
                             .fetchQuestions(category, bookmark.page, bookmark.pageSize)
-                            .doOnSuccess {
-                                val nextPage = if (bookmark.lastPage) 1 else bookmark.pageSize + 1
-                                val newBookmark = bookmark.copy(page = nextPage, lastPage = bookmark.lastPage)
+                            .flatMap {
+                                val nextPage = if (bookmark.page + 1 > bookmark.pageCount) 1 else bookmark.page + 1
+                                val newBookmark = BookmarkEntity(category.title,nextPage, bookmark.pageSize,bookmark.pageCount)
                                 localSource.saveBookmark(newBookmark)
+                                        .andThen(Single.just(it))
                             }
                             .onErrorResumeNext {
                                 remoteSource.loadQuestions(category, bookmark.page, bookmark.pageSize)
                                         .flatMap {
                                             val questions = it.data
-                                            val nextPage = if (bookmark.lastPage) 1 else it.page + 1
-                                            val newBookmark = bookmark.copy(page = nextPage, lastPage = bookmark.lastPage)
+                                            val nextPage = if (it.page + 1 > it.pageCount) 1 else it.page + 1
+                                            val newBookmark = BookmarkEntity(category.title,nextPage, bookmark.pageSize,it.pageCount)
                                             localSource.saveQuestions(questions)
                                                     .andThen(localSource.saveBookmark(newBookmark))
                                                     .andThen(Single.just(questions))
