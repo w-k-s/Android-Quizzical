@@ -40,6 +40,8 @@ class CategoryListActivity : BaseActivity(), CategoriesContract.View {
 
     private var categoriesPresenter: CategoriesContract.Presenter? = null
 
+    private var selectionEnabled : Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -56,7 +58,10 @@ class CategoryListActivity : BaseActivity(), CategoriesContract.View {
     private fun initViews() {
         titleTextView.text = getString(R.string.app_name)
         categoriesRecyclerView.adapter = CategoriesAdapter(onCategorySelected = { category ->
-            categoriesPresenter?.onCategorySelected(category)
+            if (selectionEnabled) {
+                selectionEnabled = false
+                categoriesPresenter?.onCategorySelected(category)
+            }
         })
     }
 
@@ -86,6 +91,7 @@ class CategoryListActivity : BaseActivity(), CategoriesContract.View {
     }
 
     override fun showCategories(categories: Categories) {
+        selectionEnabled = true
         (categoriesRecyclerView.adapter as CategoriesAdapter).categories = categories
     }
 

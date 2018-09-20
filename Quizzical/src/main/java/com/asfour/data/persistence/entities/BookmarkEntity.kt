@@ -18,5 +18,8 @@ data class BookmarkEntity(
         val page: Int = 1,
 
         @ColumnInfo(name = "page_size")
-        val pageSize: Int = 10
+        val pageSize: Int = 10,
+
+        @ColumnInfo(name = "last_page")
+        val lastPage: Boolean = false
 )

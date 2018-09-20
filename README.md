@@ -13,7 +13,7 @@
 - [x] save questions to room
 - [x] load questions from room
 - [ ] display questions using livedata and viewmodel
-- [ ] rotate question pages
+- [x] rotate question pages
 - [ ] Set timeout on loading questions from db
 
 - [] proper error handling

@@ -19,8 +19,7 @@ class QuestionsLocalDataSource(private val questionsDao: QuestionDao,
         questionsDao.insert(questions.map { QuestionEntity(it) })
     }
 
-    fun fetchQuestions(category: Category, page: Int, size: Int): Single<List<Question>>
-            = Single.fromCallable { questionsDao.findQuestionsByCategory(category.title, page, size) }
+    fun fetchQuestions(category: Category, page: Int, size: Int): Single<List<Question>> = Single.fromCallable { questionsDao.findQuestionsByCategory(category.title, page, size) }
             .filter { !it.isEmpty() }
             .map { it.map { it.toQuestion() } }
             .toSingle()
@@ -46,17 +45,24 @@ class QuestionsRepository(private val remoteSource: QuestionsRemoteDataSource,
                     val bookmark = it
                     localSource
                             .fetchQuestions(category, bookmark.page, bookmark.pageSize)
+                            .doOnSuccess {
+                                val nextPage = if (bookmark.lastPage) 1 else bookmark.pageSize + 1
+                                val newBookmark = bookmark.copy(page = nextPage, lastPage = bookmark.lastPage)
+                                localSource.saveBookmark(newBookmark)
+                            }
                             .onErrorResumeNext {
                                 remoteSource.loadQuestions(category, bookmark.page, bookmark.pageSize)
                                         .flatMap {
                                             val questions = it.data
-                                            val nextPage = if (it.last) 1 else it.page + 1
+                                            val nextPage = if (bookmark.lastPage) 1 else it.page + 1
+                                            val newBookmark = bookmark.copy(page = nextPage, lastPage = bookmark.lastPage)
                                             localSource.saveQuestions(questions)
-                                                    .andThen(localSource.saveBookmark(BookmarkEntity(category.title, nextPage, bookmark.pageSize)))
+                                                    .andThen(localSource.saveBookmark(newBookmark))
                                                     .andThen(Single.just(questions))
                                         }
                             }
-                }
+                }.filter { !it.isEmpty() }
+                .toSingle()
 
     }
 }

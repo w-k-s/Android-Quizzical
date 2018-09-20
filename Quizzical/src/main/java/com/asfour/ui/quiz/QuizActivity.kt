@@ -26,11 +26,15 @@ import javax.inject.Inject
 class QuizActivity : BaseActivity(), QuizContract.View {
 
     private val adapter = QuestionAdapter(onChoiceClicked = { choice ->
-        quizPresenter.onQuestionAnswered(choice)
+        if (selectionEnabled) {
+            selectionEnabled = false
+            quizPresenter.onQuestionAnswered(choice)
+        }
     })
 
     @Inject lateinit var questionsRepository: QuestionsRepository
     lateinit var quizPresenter: QuizPresenter
+    var selectionEnabled : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +83,7 @@ class QuizActivity : BaseActivity(), QuizContract.View {
     }
 
     fun showEmptyChoices(){
+        selectionEnabled = false
         (choicesRecycler.adapter as QuestionAdapter).question = Question()
     }
 
@@ -91,8 +96,10 @@ class QuizActivity : BaseActivity(), QuizContract.View {
     }
 
     override fun showError(message: String) {
+        selectionEnabled = false
         progressLayout.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
+        progressTextView.visibility = View.VISIBLE
         progressTextView.text = message
     }
 
@@ -103,6 +110,7 @@ class QuizActivity : BaseActivity(), QuizContract.View {
 
 
     override fun showQuestion(question: Question) {
+        selectionEnabled = true
         questionTextView.text = question.title
         adapter.question = question
     }
