@@ -27,5 +27,5 @@ import dagger.Component;
 public interface AppComponent {
     void inject(CategoryListActivity categoryListActivity);
 
-    void inject(QuizActivity categoryListActivity);
+    void inject(QuizActivity quizActivity);
 }

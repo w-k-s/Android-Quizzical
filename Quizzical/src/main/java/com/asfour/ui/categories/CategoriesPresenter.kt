@@ -6,6 +6,7 @@ import com.asfour.utils.ConnectivityAssistant
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.util.*
 
 /**
  * Created by Waqqas on 02/07/15.
@@ -24,12 +25,12 @@ class CategoriesPresenter(private var view: CategoriesContract.View?,
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-            view?.setProgressIndicator(false)
-            view?.showCategories(it)
-        },{
                     view?.setProgressIndicator(false)
-            view?.showError(it?.message ?: "Unknwon Error")
-        }))
+                    view?.showCategories(it)
+                }, {
+                    view?.setProgressIndicator(false)
+                    view?.showError(it?.message ?: "Unknwon Error")
+                }))
     }
 
     override fun onCategorySelected(category: Category) {

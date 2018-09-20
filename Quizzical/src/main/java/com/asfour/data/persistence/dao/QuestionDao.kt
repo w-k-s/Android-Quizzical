@@ -29,9 +29,10 @@ abstract class QuestionDao {
     }
 
     @Transaction
-    open fun findQuestionsByCategory(category: String, offset: Int, limit: Int): List<QuestionEntity> {
+    open fun findQuestionsByCategory(category: String, page: Int, size: Int): List<QuestionEntity> {
 
-        val questions = _findQuestionsByCategory(category, offset, limit)
+        val offset = (if(page <= 0) 0 else page - 1) * size
+        val questions = _findQuestionsByCategory(category, offset, size)
         for (question in questions) {
             question.choices = _findChoicesByQuestionId(question.id)
         }
