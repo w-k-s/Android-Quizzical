@@ -16,4 +16,7 @@ interface BookmarkDao {
 
     @Query("SELECT * FROM bookmarks WHERE category = :category")
     fun findBookmarkByCategory(category: String): Maybe<BookmarkEntity>
+
+    @Query("DELETE FROM bookmarks WHERE category = :category")
+    fun deleteBookmarkForCategory(category: String)
 }

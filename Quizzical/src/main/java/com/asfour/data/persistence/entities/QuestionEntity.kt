@@ -4,10 +4,11 @@ import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
+import com.asfour.data.persistence.entities.QuestionEntity.Companion.TABLE_NAME
 import com.asfour.data.questions.Id
 import com.asfour.data.questions.Question
 
-@Entity(tableName = "questions")
+@Entity(tableName = TABLE_NAME)
 data class QuestionEntity(
 
         @PrimaryKey
@@ -26,7 +27,7 @@ data class QuestionEntity(
     constructor(question: Question) :
             this(question.id.id,
                     question.title,
-                    question.category){
+                    question.category) {
         this.choices = question.choices.map { ChoiceEntity(question.id.id, it) }
     }
 
@@ -36,4 +37,10 @@ data class QuestionEntity(
             this.category,
             this.choices.map { it.toChoice() }
     )
+
+
+    companion object {
+        const val TABLE_NAME = "questions"
+
+    }
 }

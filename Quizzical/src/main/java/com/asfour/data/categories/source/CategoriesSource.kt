@@ -39,10 +39,6 @@ class CategoriesLocalDataSource(private val categoryDao: CategoryDao,
         auditDao.auditEntity(AuditEntity(CategoryEntity.TABLE_NAME))
     }
 
-    fun deleteCategories(): Completable = Completable.fromCallable {
-        categoryDao.deleteAll()
-        auditDao.deleteAudit(CategoryEntity.TABLE_NAME)
-    }
 }
 
 class CategoriesRepository(private val remoteDataSource: CategoriesRemoteDataSource,

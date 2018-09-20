@@ -20,6 +20,12 @@ abstract class QuestionDao {
     @Query("SELECT * FROM choices WHERE questionId = :questionId")
     abstract fun _findChoicesByQuestionId(questionId: String): List<ChoiceEntity>
 
+    @Query("DELETE FROM questions")
+    abstract fun deleteAll()
+
+    @Query("DELETE FROM questions WHERE category = :category")
+    abstract fun deleteQuestionsForCategory(category: String)
+
     @Transaction
     open fun insert(questions: List<QuestionEntity>) {
         for (question in questions) {
