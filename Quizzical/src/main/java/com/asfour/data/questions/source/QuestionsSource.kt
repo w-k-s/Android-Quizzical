@@ -12,15 +12,12 @@ import com.asfour.data.questions.Question
 import io.reactivex.Completable
 import io.reactivex.Maybe
 import io.reactivex.Single
+import java.util.concurrent.TimeUnit
 
 
 class QuestionsLocalDataSource(private val questionsDao: QuestionDao,
                                private val bookmarkDao: BookmarkDao,
                                private val auditDao: AuditDao) {
-
-    companion object {
-        const val EXPIRY_QUESTIONS = 2 *
-    }
 
     fun saveQuestions(questions: List<Question>) = Completable.fromCallable {
         questions.first()?.let {
@@ -32,9 +29,10 @@ class QuestionsLocalDataSource(private val questionsDao: QuestionDao,
         auditDao.auditEntity(AuditEntity(QuestionEntity.TABLE_NAME))
     }
 
-    fun fetchQuestions(category: Category, page: Int, size: Int): Single<List<Question>>
-            = auditDao.isEntityExpired(QuestionEntity.TABLE_NAME, )
-            .filter { !it }
+    fun fetchQuestions(category: Category, page: Int, size: Int, ignoreExpiry: Boolean): Single<List<Question>>
+            = auditDao.isEntityExpired(QuestionEntity.TABLE_NAME, TimeUnit.DAYS.toSeconds(7))
+            .onErrorReturnItem(false)
+            .filter { expired -> ignoreExpiry || !expired }
             .toSingle()
             .flatMap { Single.fromCallable { questionsDao.findQuestionsByCategory(category.title, page, size) } }
             .filter { !it.isEmpty() }
@@ -66,9 +64,9 @@ class QuestionsRepository(private val remoteSource: QuestionsRemoteDataSource,
                 }
     }
 
-    private fun loadQuestionsLocally(category: Category, bookmark: BookmarkEntity): Single<List<Question>> {
+    private fun loadQuestionsLocally(category: Category, bookmark: BookmarkEntity, ignoreExpiry: Boolean): Single<List<Question>> {
         return localSource
-                .fetchQuestions(category, bookmark.page, bookmark.pageSize)
+                .fetchQuestions(category, bookmark.page, bookmark.pageSize, ignoreExpiry)
                 .flatMap {
                     val nextPage = if (bookmark.page + 1 > bookmark.pageCount) 1 else bookmark.page + 1
                     val newBookmark = BookmarkEntity(category.title, nextPage, bookmark.pageSize, bookmark.pageCount)
@@ -77,13 +75,14 @@ class QuestionsRepository(private val remoteSource: QuestionsRemoteDataSource,
                 }
     }
 
-    fun loadQuestions(category: Category): Single<List<Question>> {
+    fun loadQuestions(category: Category,
+                      ignoreExpiry: Boolean = false): Single<List<Question>> {
 
         return localSource.fetchBookmark(category)
                 .switchIfEmpty(Single.just(BookmarkEntity(category.title)))
                 .flatMap {
                     val bookmark = it
-                    loadQuestionsLocally(category, bookmark)
+                    loadQuestionsLocally(category, bookmark, ignoreExpiry)
                             .onErrorResumeNext {
                                 loadQuestionsRemotely(category, bookmark)
                             }

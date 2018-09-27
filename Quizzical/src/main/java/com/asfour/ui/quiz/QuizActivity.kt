@@ -19,6 +19,7 @@ import com.asfour.data.questions.source.QuestionsRepository
 import com.asfour.data.quiz.QuizScore
 import com.asfour.ui.base.BaseActivity
 import com.asfour.ui.score.ScoreActivity
+import com.asfour.utils.ConnectivityAssistant
 import com.asfour.utils.asVisibility
 import kotlinx.android.synthetic.main.layout_question.*
 import javax.inject.Inject
@@ -33,6 +34,8 @@ class QuizActivity : BaseActivity(), QuizContract.View {
     })
 
     @Inject lateinit var questionsRepository: QuestionsRepository
+    @Inject lateinit var connectivityAssistant: ConnectivityAssistant
+
     lateinit var quizPresenter: QuizPresenter
     var selectionEnabled : Boolean = false
 
@@ -49,7 +52,7 @@ class QuizActivity : BaseActivity(), QuizContract.View {
         App.component().inject(this)
 
         choicesRecycler.adapter = adapter
-        quizPresenter = QuizPresenter(this, category!!, questionsRepository)
+        quizPresenter = QuizPresenter(this, category!!, questionsRepository, connectivityAssistant)
 
         quizPresenter.startQuiz()
     }
@@ -95,12 +98,12 @@ class QuizActivity : BaseActivity(), QuizContract.View {
         finish()
     }
 
-    override fun showError(message: String) {
+    override fun showError() {
         selectionEnabled = false
         progressLayout.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
         progressTextView.visibility = View.VISIBLE
-        progressTextView.text = message
+        progressTextView.text = getString(R.string.err_fetching_questions)
     }
 
     override fun onDestroy() {

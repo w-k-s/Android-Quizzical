@@ -24,7 +24,8 @@ class DataSourceModule {
 
     @Provides
     fun provideQuestionsLocalDataSource(questionDao: QuestionDao,
-                                        bookmarkDao: BookmarkDao) = QuestionsLocalDataSource(questionDao,bookmarkDao)
+                                        bookmarkDao: BookmarkDao,
+                                        auditDao: AuditDao) = QuestionsLocalDataSource(questionDao,bookmarkDao,auditDao)
 
     @Provides
     fun provideQuestionsDataSource(api: QuizzicalApi) = QuestionsRemoteDataSource(api)

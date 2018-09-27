@@ -5,7 +5,7 @@
 - [x] Set up room
 - [x] Save categories to Room
 - [x] Load categories through room
-- [ ] Display categories using livedata and viewmodel
+- [x] Display categories using livedata and viewmodel
 - [x] Set timeout on loading categories from db
 - [x] cache categories in memory
 
@@ -14,10 +14,10 @@
 - [x] load questions from room
 - [ ] display questions using livedata and viewmodel
 - [x] rotate question pages
-- [ ] Set timeout on loading questions from db
+- [x] Set timeout on loading questions from db
 
-- [] proper error handling
+- [x] proper error handling
 
-- [] rotating device
+- [x] rotating device
 
 - [] fix dagger injections

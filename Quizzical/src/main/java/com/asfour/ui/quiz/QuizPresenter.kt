@@ -4,13 +4,15 @@ import com.asfour.data.categories.Category
 import com.asfour.data.questions.Choice
 import com.asfour.data.questions.source.QuestionsRepository
 import com.asfour.data.quiz.Quiz
+import com.asfour.utils.ConnectivityAssistant
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class QuizPresenter(private var view: QuizContract.View?,
                     private val category: Category,
-                    private val quizRepository: QuestionsRepository) : QuizContract.Presenter {
+                    private val quizRepository: QuestionsRepository,
+                    private val connectivityAssistant: ConnectivityAssistant) : QuizContract.Presenter {
 
     private var quiz: Quiz = Quiz(category, emptyList())
     private val compositeDisposable = CompositeDisposable()
@@ -18,7 +20,7 @@ class QuizPresenter(private var view: QuizContract.View?,
     override fun startQuiz() {
         view?.setProgressIndicator(true)
 
-        compositeDisposable.add(quizRepository.loadQuestions(category)
+        compositeDisposable.add(quizRepository.loadQuestions(category, ignoreExpiry = !connectivityAssistant.hasNetworkConnection())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -27,7 +29,7 @@ class QuizPresenter(private var view: QuizContract.View?,
                     view?.showQuestion(quiz.next())
                 }, {
                     view?.setProgressIndicator(false)
-                    view?.showError(it.message ?: "Unknown Error")
+                    view?.showError()
                 }))
     }
 

@@ -1,5 +1,7 @@
 package com.asfour.ui.categories
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
@@ -30,7 +32,7 @@ import javax.inject.Inject
  *
  * @author Waqqas
  */
-class CategoryListActivity : BaseActivity(), CategoriesContract.View {
+class CategoryListActivity : BaseActivity() {
 
     @Inject
     lateinit var categoriesRepository: CategoriesRepository
@@ -38,9 +40,9 @@ class CategoryListActivity : BaseActivity(), CategoriesContract.View {
     @Inject
     lateinit var connectionAssistant: ConnectivityAssistant
 
-    private var categoriesPresenter: CategoriesContract.Presenter? = null
+    lateinit var categoriesViewModel: CategoriesViewModel
 
-    private var selectionEnabled : Boolean = false
+    private var selectionEnabled: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -49,7 +51,9 @@ class CategoryListActivity : BaseActivity(), CategoriesContract.View {
 
         App.component().inject(this)
 
-        categoriesPresenter = CategoriesPresenter(this, categoriesRepository,connectionAssistant)
+        categoriesViewModel = ViewModelProviders
+                .of(this, CategoriesViewModelFactory(application, categoriesRepository, connectionAssistant))
+                .get(CategoriesViewModel::class.java)
 
         initViews()
     }
@@ -60,9 +64,28 @@ class CategoryListActivity : BaseActivity(), CategoriesContract.View {
         categoriesRecyclerView.adapter = CategoriesAdapter(onCategorySelected = { category ->
             if (selectionEnabled) {
                 selectionEnabled = false
-                categoriesPresenter?.onCategorySelected(category)
+                categoriesViewModel?.startQuiz.value = category
             }
         })
+
+        categoriesViewModel.apply {
+            startQuiz.observe(
+                    this@CategoryListActivity,
+                    Observer { it?.let { startQuiz(it) } }
+            )
+        }
+        categoriesViewModel.loading.observe(
+                this@CategoryListActivity,
+                Observer { setProgressIndicator(it == true) }
+        )
+        categoriesViewModel.loadingError.observe(
+                this@CategoryListActivity,
+                Observer { it?.let { showError(it) } }
+        )
+        categoriesViewModel.categories.observe(
+                this@CategoryListActivity,
+                Observer { it?.let { showCategories(it) } }
+        )
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
@@ -70,32 +93,27 @@ class CategoryListActivity : BaseActivity(), CategoriesContract.View {
         updateSpanCount()
     }
 
-    fun updateSpanCount(){
+    fun updateSpanCount() {
         val layoutManager = (categoriesRecyclerView.layoutManager as GridLayoutManager)
 
-        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             layoutManager.spanCount = 3
-        }else{
+        } else {
             layoutManager.spanCount = 1
         }
     }
 
     override fun onResume() {
         super.onResume()
-        categoriesPresenter?.loadCategories()
+        categoriesViewModel.loadCategories()
     }
 
-    override fun onDestroy() {
-        categoriesPresenter?.dropView()
-        super.onDestroy()
-    }
-
-    override fun showCategories(categories: Categories) {
+    fun showCategories(categories: Categories) {
         selectionEnabled = true
         (categoriesRecyclerView.adapter as CategoriesAdapter).categories = categories
     }
 
-    override fun startQuiz(category: Category) {
+    fun startQuiz(category: Category) {
 
         val intent = Intent(this, QuizActivity::class.java)
         intent.putExtra(Extras.Category, category)
@@ -103,7 +121,7 @@ class CategoryListActivity : BaseActivity(), CategoriesContract.View {
         startActivity(intent)
     }
 
-    override fun setProgressIndicator(visible: Boolean) {
+    fun setProgressIndicator(visible: Boolean) {
 
         categoriesRecyclerView.visibility = (!visible).asVisibility()
         progressLayout.visibility = (visible).asVisibility()
@@ -115,7 +133,7 @@ class CategoryListActivity : BaseActivity(), CategoriesContract.View {
         }
     }
 
-    override fun showError(message: String) {
+    fun showError(message: String) {
         categoriesRecyclerView.visibility = View.GONE
         progressBar.visibility = View.GONE
         progressLayout.visibility = View.VISIBLE

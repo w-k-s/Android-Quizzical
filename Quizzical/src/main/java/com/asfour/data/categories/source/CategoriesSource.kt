@@ -8,6 +8,7 @@ import com.asfour.data.persistence.entities.AuditEntity
 import com.asfour.data.persistence.entities.CategoryEntity
 import io.reactivex.Completable
 import io.reactivex.Single
+import java.util.concurrent.TimeUnit
 
 
 class CategoriesRemoteDataSource(private val api: QuizzicalApi) {
@@ -17,12 +18,8 @@ class CategoriesRemoteDataSource(private val api: QuizzicalApi) {
 class CategoriesLocalDataSource(private val categoryDao: CategoryDao,
                                 private val auditDao: AuditDao) {
 
-    companion object {
-        const val CATEGORIES_EXPIRY_SECONDS: Long = 24 * 60 * 60 // One day
-    }
-
     fun fetchCategories(ignoreExpiry: Boolean): Single<Categories> =
-            auditDao.isEntityExpired(CategoryEntity.TABLE_NAME, CATEGORIES_EXPIRY_SECONDS)
+            auditDao.isEntityExpired(CategoryEntity.TABLE_NAME, TimeUnit.DAYS.toSeconds(7))
                     .onErrorReturnItem(false)
                     .filter { expired -> ignoreExpiry || !expired }
                     .toSingle()
