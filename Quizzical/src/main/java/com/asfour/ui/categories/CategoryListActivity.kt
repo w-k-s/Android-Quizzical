@@ -55,11 +55,11 @@ class CategoryListActivity : BaseActivity() {
                 .of(this, CategoriesViewModelFactory(application, categoriesRepository, connectionAssistant))
                 .get(CategoriesViewModel::class.java)
 
-        initViews()
+        setupViewModel()
     }
 
 
-    private fun initViews() {
+    private fun setupViewModel() {
         titleTextView.text = getString(R.string.app_name)
         categoriesRecyclerView.adapter = CategoriesAdapter(onCategorySelected = { category ->
             if (selectionEnabled) {

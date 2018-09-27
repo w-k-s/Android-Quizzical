@@ -1,5 +1,7 @@
 package com.asfour.ui.quiz
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
@@ -24,19 +26,19 @@ import com.asfour.utils.asVisibility
 import kotlinx.android.synthetic.main.layout_question.*
 import javax.inject.Inject
 
-class QuizActivity : BaseActivity(), QuizContract.View {
+class QuizActivity : BaseActivity() {
 
     private val adapter = QuestionAdapter(onChoiceClicked = { choice ->
         if (selectionEnabled) {
             selectionEnabled = false
-            quizPresenter.onQuestionAnswered(choice)
+            quizViewModel.onQuestionAnswered(choice)
         }
     })
 
     @Inject lateinit var questionsRepository: QuestionsRepository
     @Inject lateinit var connectivityAssistant: ConnectivityAssistant
+    lateinit var quizViewModel: QuizViewModel
 
-    lateinit var quizPresenter: QuizPresenter
     var selectionEnabled : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,9 +54,34 @@ class QuizActivity : BaseActivity(), QuizContract.View {
         App.component().inject(this)
 
         choicesRecycler.adapter = adapter
-        quizPresenter = QuizPresenter(this, category!!, questionsRepository, connectivityAssistant)
 
-        quizPresenter.startQuiz()
+        quizViewModel = ViewModelProviders
+                .of(this, QuizViewModelFactory(application,category!!,questionsRepository,connectivityAssistant))
+                .get(QuizViewModel::class.java)
+
+        setupViewModel()
+
+        quizViewModel.startQuiz()
+    }
+
+    private fun setupViewModel(){
+
+        quizViewModel.loading.observe(
+                this@QuizActivity,
+                Observer { setProgressIndicator(it == true) }
+        )
+        quizViewModel.loadingError.observe(
+                this@QuizActivity,
+                Observer { it?.let { showError(it) } }
+        )
+        quizViewModel.question.observe(
+                this@QuizActivity,
+                Observer { it?.let { showQuestion(it) } }
+        )
+        quizViewModel.score.observe(
+                this@QuizActivity,
+                Observer { it?.let { showScore(it) } }
+        )
     }
 
     override fun onConfigurationChanged(newConfig: Configuration?) {
@@ -72,7 +99,7 @@ class QuizActivity : BaseActivity(), QuizContract.View {
         }
     }
 
-    override fun setProgressIndicator(visible: Boolean) {
+    fun setProgressIndicator(visible: Boolean) {
         progressLayout.visibility = visible.asVisibility()
         progressBar.visibility = visible.asVisibility()
         progressTextView.visibility = visible.asVisibility()
@@ -90,7 +117,7 @@ class QuizActivity : BaseActivity(), QuizContract.View {
         (choicesRecycler.adapter as QuestionAdapter).question = Question()
     }
 
-    override fun showScore(quizScore: QuizScore) {
+    fun showScore(quizScore: QuizScore) {
         val intent = Intent(this,ScoreActivity::class.java)
         intent.putExtra(Extras.Score, quizScore)
 
@@ -98,21 +125,16 @@ class QuizActivity : BaseActivity(), QuizContract.View {
         finish()
     }
 
-    override fun showError() {
+    fun showError(message: String) {
         selectionEnabled = false
         progressLayout.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
         progressTextView.visibility = View.VISIBLE
-        progressTextView.text = getString(R.string.err_fetching_questions)
-    }
-
-    override fun onDestroy() {
-        quizPresenter.dropView()
-        super.onDestroy()
+        progressTextView.text = message
     }
 
 
-    override fun showQuestion(question: Question) {
+    fun showQuestion(question: Question) {
         selectionEnabled = true
         questionTextView.text = question.title
         adapter.question = question

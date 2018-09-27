@@ -12,7 +12,7 @@
 - [x] load questions
 - [x] save questions to room
 - [x] load questions from room
-- [ ] display questions using livedata and viewmodel
+- [x] display questions using livedata and viewmodel
 - [x] rotate question pages
 - [x] Set timeout on loading questions from db
 
@@ -21,3 +21,4 @@
 - [x] rotating device
 
 - [] fix dagger injections
+- [] animations?
