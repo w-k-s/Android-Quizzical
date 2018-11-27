@@ -1,42 +1,42 @@
 package com.asfour.data.categories.source
 
-import android.util.Log
 import com.asfour.data.api.QuizzicalApi
 import com.asfour.data.categories.Categories
 import com.asfour.data.persistence.dao.AuditDao
 import com.asfour.data.persistence.dao.CategoryDao
 import com.asfour.data.persistence.entities.AuditEntity
 import com.asfour.data.persistence.entities.CategoryEntity
-import com.asfour.utils.TAG
-import io.reactivex.Completable
-import io.reactivex.Single
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import java.util.concurrent.TimeUnit
 
 
 class CategoriesRemoteDataSource(private val api: QuizzicalApi) {
-    fun loadCategories(): Single<Categories> = api.categories
+    suspend fun loadCategories(): Categories = api.categories.await()
 }
 
 class CategoriesLocalDataSource(private val categoryDao: CategoryDao,
                                 private val auditDao: AuditDao) {
 
-    fun fetchCategories(ignoreExpiry: Boolean): Single<Categories> =
-            auditDao.isEntityExpired(CategoryEntity.TABLE_NAME, TimeUnit.DAYS.toSeconds(7))
-                    .onErrorReturnItem(false)
-                    .filter { expired -> ignoreExpiry || !expired }
-                    .toSingle()
-                    .flatMap { categoryDao.list() }
-                    .filter { !it.isEmpty() }
-                    .map { it.map { it.toCategory() }.toList() }
-                    .map { Categories(it) }
-                    .toSingle()
+    suspend fun fetchCategories(ignoreExpiry: Boolean): Categories {
+        return GlobalScope.async {
 
+            val expired = auditDao.isEntityExpired(CategoryEntity.TABLE_NAME, TimeUnit.DAYS.toSeconds(7))
 
-    fun saveCategories(categories: Categories) = Completable.fromCallable {
+            if (!ignoreExpiry && expired) {
+                Categories()
+            } else {
+                Categories(categoryDao.list().map { it.toCategory() })
+            }
+
+        }.await()
+    }
+
+    suspend fun saveCategories(categories: Categories) = GlobalScope.async {
         categoryDao.deleteAll()
         categoryDao.insert(categories.map { CategoryEntity(it) }.toList())
         auditDao.auditEntity(AuditEntity(CategoryEntity.TABLE_NAME))
-    }
+    }.await()
 
 }
 
@@ -45,26 +45,27 @@ class CategoriesRepository(private val remoteDataSource: CategoriesRemoteDataSou
 
     private var categories: Categories = Categories()
 
-    fun categories(forceRefresh: Boolean = false,
-                   ignoreExpiry: Boolean = false): Single<Categories> {
+    suspend fun categories(forceRefresh: Boolean = false,
+                           ignoreExpiry: Boolean = false): Categories {
 
         if (!categories.isEmpty) {
-            return Single.just(categories)
+            return categories
         }
 
-        val refresh = remoteDataSource.loadCategories().flatMap {
-            categories = it
+        if (!forceRefresh) {
+            val categories = localDataSource.fetchCategories(ignoreExpiry)
+            if (!categories.isEmpty) {
+                this.categories = categories
+                return categories
+            }
+        }
+
+        val categories = remoteDataSource.loadCategories()
+        if (!categories.isEmpty) {
+            this.categories = categories
             localDataSource.saveCategories(categories)
-                    .andThen(Single.just(it))
         }
 
-        if (forceRefresh) {
-            return refresh
-        }
-
-        return localDataSource.fetchCategories(ignoreExpiry)
-                .doOnSuccess { categories = it }
-                .onErrorResumeNext(refresh)
-                .doOnError { Log.e(TAG(), it.message) }
+        return categories
     }
 }

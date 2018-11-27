@@ -2,7 +2,7 @@ package com.asfour.di.modules
 
 import android.app.Application
 import com.asfour.data.api.QuizzicalApi
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import okhttp3.Cache
@@ -43,7 +43,7 @@ class ApiModule {
         return Retrofit.Builder()
                 .baseUrl("http://34.245.141.120:3000")
                 .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .client(client)
                 .build()
     }

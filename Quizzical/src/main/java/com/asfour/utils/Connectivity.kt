@@ -2,17 +2,18 @@ package com.asfour.utils
 
 import android.content.Context
 import android.net.ConnectivityManager
-import io.reactivex.Single
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
 
 
-
 class ConnectivityAssistant(val context: Context) {
 
-    fun hasInternetConnection(): Single<Boolean> {
-        return Single.fromCallable {
+    suspend fun hasInternetConnection(): Boolean {
+        return GlobalScope.async {
+
             try {
 
                 val timeoutMs = 1500
@@ -26,7 +27,9 @@ class ConnectivityAssistant(val context: Context) {
             } catch (e: IOException) {
                 false
             }
-        }
+
+        }.await()
+
     }
 
     fun hasNetworkConnection(): Boolean {

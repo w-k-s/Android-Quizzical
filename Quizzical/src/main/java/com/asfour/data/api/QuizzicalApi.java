@@ -5,7 +5,7 @@ import com.asfour.data.questions.Question;
 
 import java.util.List;
 
-import io.reactivex.Single;
+import kotlinx.coroutines.Deferred;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
@@ -15,10 +15,10 @@ import retrofit2.http.Query;
 public interface QuizzicalApi {
 
     @GET("/api/v3/categories")
-    Single<Categories> getCategories();
+    Deferred<Categories> getCategories();
 
     @GET("/api/v3/questions")
-    Single<ApiResponse<List<Question>>> getQuestions(
+    Deferred<ApiResponse<List<Question>>> getQuestions(
             @Query("category") String category,
             @Query("page") int page,
             @Query("size") int pageSize);

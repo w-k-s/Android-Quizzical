@@ -9,9 +9,9 @@ import com.asfour.data.categories.Category
 import com.asfour.data.categories.source.CategoriesRepository
 import com.asfour.utils.ConnectivityAssistant
 import com.example.android.architecture.blueprints.todoapp.SingleLiveEvent
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  * Created by Waqqas on 02/07/15.
@@ -19,8 +19,6 @@ import io.reactivex.schedulers.Schedulers
 class CategoriesViewModel(private val app: Application,
                           private val categoriesRepository: CategoriesRepository,
                           private val connectivity: ConnectivityAssistant) : AndroidViewModel(app) {
-
-    private val disposable = CompositeDisposable()
 
     val loading = MutableLiveData<Boolean>()
     val loadingError = MutableLiveData<String>()
@@ -38,15 +36,17 @@ class CategoriesViewModel(private val app: Application,
 
         loading.value = true
 
-        disposable.add(categoriesRepository.categories(ignoreExpiry = !connectivity.hasNetworkConnection())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    loading.value = false
-                    categories.value = it
-                }, {
-                    loading.value = false
-                    loadingError.value = app.getString(R.string.err_fetching_categories)
-                }))
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                loading.value = true
+                val hasInternetConnection = connectivity.hasInternetConnection()
+                val categoriesResult = categoriesRepository.categories(ignoreExpiry = !hasInternetConnection)
+                categories.value = categoriesResult
+            } catch (e: Exception) {
+                loadingError.value = app.getString(R.string.err_fetching_categories)
+            } finally {
+                loading.value = false
+            }
+        }
     }
 }

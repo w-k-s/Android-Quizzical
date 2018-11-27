@@ -5,7 +5,6 @@ import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
 import com.asfour.data.persistence.entities.CategoryEntity
-import io.reactivex.Single
 
 @Dao
 interface CategoryDao {
@@ -17,7 +16,7 @@ interface CategoryDao {
     fun insertOne(category: CategoryEntity)
 
     @Query("SELECT * FROM categories ORDER BY title ASC")
-    fun list() : Single<List<CategoryEntity>>
+    fun list(): List<CategoryEntity>
 
     @Query("DELETE FROM categories")
     fun deleteAll()

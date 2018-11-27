@@ -12,9 +12,9 @@ import com.asfour.data.quiz.Quiz
 import com.asfour.data.quiz.QuizScore
 import com.asfour.utils.ConnectivityAssistant
 import com.example.android.architecture.blueprints.todoapp.SingleLiveEvent
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class QuizViewModel(val app: Application,
                     private val category: Category,
@@ -22,7 +22,6 @@ class QuizViewModel(val app: Application,
                     private val connectivityAssistant: ConnectivityAssistant) : AndroidViewModel(app) {
 
     private var quiz: Quiz = Quiz(category, emptyList())
-    private val compositeDisposable = CompositeDisposable()
 
     val loading = MutableLiveData<Boolean>()
     val loadingError = MutableLiveData<String>()
@@ -37,20 +36,23 @@ class QuizViewModel(val app: Application,
     }
 
     fun startQuiz() {
-        loading.value = true
+        loadQuestions()
+    }
 
-        compositeDisposable.add(quizRepository.loadQuestions(category, ignoreExpiry = !connectivityAssistant.hasNetworkConnection())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    quiz = Quiz(category, it)
-                    loading.value = false
-                    loadingError.value = ""
-                    question.value = quiz.next()
-                }, {
-                    loading.value = false
-                    loadingError.value = app.getString(R.string.err_fetching_questions)
-                }))
+    private fun loadQuestions() {
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                loading.value = true
+                val hasInternetConnection = connectivityAssistant.hasInternetConnection()
+                val questions = quizRepository.loadQuestions(category, ignoreExpiry = !hasInternetConnection)
+                quiz = Quiz(category, questions)
+                question.value = quiz.next()
+            } catch (e: Exception) {
+                loadingError.value = app.getString(R.string.err_fetching_questions)
+            } finally {
+                loading.value = false
+            }
+        }
     }
 
     fun onQuestionAnswered(choice: Choice) {

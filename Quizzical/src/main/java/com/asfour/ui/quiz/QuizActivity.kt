@@ -165,7 +165,7 @@ class QuestionAdapter(question: Question? = null, private val onChoiceClicked: (
     override fun onBindViewHolder(holder: ChoicesViewHolder, position: Int) {
         val context = holder.choiceTextView.context
 
-        question?.let {
+        question?.let { it ->
             val choice = it.choices[position]
             val background = if (choice.correct) {
                 R.drawable.bg_transition_correct
@@ -175,7 +175,7 @@ class QuestionAdapter(question: Question? = null, private val onChoiceClicked: (
 
             holder.choiceTextView.background = ContextCompat.getDrawable(context, background)
 
-            holder.bind(choice, {
+            holder.bind(choice) {
                 lockedForAnimation = true
 
                 val itemBackground = (holder.choiceTextView.background as TransitionDrawable)
@@ -186,7 +186,7 @@ class QuestionAdapter(question: Question? = null, private val onChoiceClicked: (
                     onChoiceClicked(it)
                 }, 400)
 
-            })
+            }
         }
     }
 }

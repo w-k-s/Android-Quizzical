@@ -5,7 +5,6 @@ import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
 import com.asfour.data.persistence.entities.AuditEntity
-import io.reactivex.Single
 
 @Dao
 interface AuditDao {
@@ -17,5 +16,5 @@ interface AuditDao {
     fun deleteAudit(name : String)
 
     @Query("SELECT COUNT(entity) > 0 as expired FROM audits WHERE entity = :name AND (last_modified_on + :maxElapsedSeconds) < CAST(strftime('%s', 'now') AS LONG)")
-    fun isEntityExpired(name: String, maxElapsedSeconds: Long) : Single<Boolean>
+    fun isEntityExpired(name: String, maxElapsedSeconds: Long): Boolean
 }
