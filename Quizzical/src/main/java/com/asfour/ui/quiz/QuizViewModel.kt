@@ -49,7 +49,7 @@ class QuizViewModel(val app: Application,
                 question.value = quiz.next()
             } catch (e: Exception) {
                 loadingError.value = app.getString(R.string.err_fetching_questions)
-            } finally {
+            }finally {
                 loading.value = false
             }
         }

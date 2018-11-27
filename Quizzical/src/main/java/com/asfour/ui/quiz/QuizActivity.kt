@@ -41,9 +41,9 @@ class QuizActivity : BaseActivity() {
     lateinit var questionsRepository: QuestionsRepository
     @Inject
     lateinit var connectivityAssistant: ConnectivityAssistant
-    lateinit var quizViewModel: QuizViewModel
+    private lateinit var quizViewModel: QuizViewModel
 
-    var selectionEnabled: Boolean = false
+    private var selectionEnabled: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,15 +76,15 @@ class QuizActivity : BaseActivity() {
         )
         quizViewModel.loadingError.observe(
                 this@QuizActivity,
-                Observer { it?.let { showError(it) } }
+                Observer { it?.let { error -> showError(error) } }
         )
         quizViewModel.question.observe(
                 this@QuizActivity,
-                Observer { it?.let { showQuestion(it) } }
+                Observer { it?.let { question -> showQuestion(question) } }
         )
         quizViewModel.score.observe(
                 this@QuizActivity,
-                Observer { it?.let { showScore(it) } }
+                Observer { quizScore -> quizScore?.let { showScore(it) } }
         )
     }
 
@@ -93,7 +93,7 @@ class QuizActivity : BaseActivity() {
         updateSpanCount()
     }
 
-    fun updateSpanCount() {
+    private fun updateSpanCount() {
         val layoutManager = (choicesRecycler.layoutManager as GridLayoutManager)
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -103,7 +103,7 @@ class QuizActivity : BaseActivity() {
         }
     }
 
-    fun setProgressIndicator(visible: Boolean) {
+    private fun setProgressIndicator(visible: Boolean) {
         progressLayout.visibility = visible.asVisibility()
         progressBar.visibility = visible.asVisibility()
         progressTextView.visibility = visible.asVisibility()
@@ -116,12 +116,12 @@ class QuizActivity : BaseActivity() {
         }
     }
 
-    fun showEmptyChoices() {
+    private fun showEmptyChoices() {
         selectionEnabled = false
         (choicesRecycler.adapter as QuestionAdapter).question = Question()
     }
 
-    fun showScore(quizScore: QuizScore) {
+    private fun showScore(quizScore: QuizScore) {
         val intent = Intent(this, ScoreActivity::class.java)
         intent.putExtra(Extras.Score, quizScore)
 
@@ -129,16 +129,14 @@ class QuizActivity : BaseActivity() {
         finish()
     }
 
-    fun showError(message: String) {
+    private fun showError(message: String) {
         selectionEnabled = false
-        progressLayout.visibility = View.VISIBLE
-        progressBar.visibility = View.GONE
-        progressTextView.visibility = View.VISIBLE
-        progressTextView.text = message
+        questionTextView.visibility = View.VISIBLE
+        questionTextView.text = message
     }
 
 
-    fun showQuestion(question: Question) {
+    private fun showQuestion(question: Question) {
         selectionEnabled = true
         questionTextView.text = question.title
         adapter.question = question
@@ -147,7 +145,7 @@ class QuizActivity : BaseActivity() {
 
 class QuestionAdapter(question: Question? = null, private val onChoiceClicked: (Choice) -> Unit) : RecyclerView.Adapter<ChoicesViewHolder>() {
 
-    var lockedForAnimation = false
+    private var lockedForAnimation = false
 
     var question: Question? = question
         set(newValue) {
@@ -193,7 +191,7 @@ class QuestionAdapter(question: Question? = null, private val onChoiceClicked: (
 
 class ChoicesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    val choiceTextView = itemView.findViewById<TextView>(R.id.choiceTextView)
+    val choiceTextView : TextView = itemView.findViewById(R.id.choiceTextView)
 
     fun bind(choice: Choice, onChoiceClicked: (Choice) -> Unit) {
         choiceTextView.text = choice.title
