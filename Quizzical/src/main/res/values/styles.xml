@@ -16,7 +16,7 @@
         <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
     </style>
     <style name="QuizButton">
-        <item name="android:background">@drawable/button_answer</item>
+        <item name="android:background">@drawable/button_answer_default</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/font_size_paragraph</item>

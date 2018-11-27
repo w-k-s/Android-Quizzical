@@ -1,6 +1,5 @@
 package com.asfour.utils
 
-import android.app.Activity
 import android.view.View
 
 class Extensions {
@@ -14,4 +13,4 @@ fun Boolean.asVisibility() : Int{
     }
 }
 
-val Activity.TAG get() = this.javaClass::getSimpleName
+val Any.TAG get() = this.javaClass::getSimpleName

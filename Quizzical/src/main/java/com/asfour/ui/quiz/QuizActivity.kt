@@ -4,7 +4,9 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -35,11 +37,13 @@ class QuizActivity : BaseActivity() {
         }
     })
 
-    @Inject lateinit var questionsRepository: QuestionsRepository
-    @Inject lateinit var connectivityAssistant: ConnectivityAssistant
+    @Inject
+    lateinit var questionsRepository: QuestionsRepository
+    @Inject
+    lateinit var connectivityAssistant: ConnectivityAssistant
     lateinit var quizViewModel: QuizViewModel
 
-    var selectionEnabled : Boolean = false
+    var selectionEnabled: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +60,7 @@ class QuizActivity : BaseActivity() {
         choicesRecycler.adapter = adapter
 
         quizViewModel = ViewModelProviders
-                .of(this, QuizViewModelFactory(application,category!!,questionsRepository,connectivityAssistant))
+                .of(this, QuizViewModelFactory(application, category!!, questionsRepository, connectivityAssistant))
                 .get(QuizViewModel::class.java)
 
         setupViewModel()
@@ -64,7 +68,7 @@ class QuizActivity : BaseActivity() {
         quizViewModel.startQuiz()
     }
 
-    private fun setupViewModel(){
+    private fun setupViewModel() {
 
         quizViewModel.loading.observe(
                 this@QuizActivity,
@@ -112,13 +116,13 @@ class QuizActivity : BaseActivity() {
         }
     }
 
-    fun showEmptyChoices(){
+    fun showEmptyChoices() {
         selectionEnabled = false
         (choicesRecycler.adapter as QuestionAdapter).question = Question()
     }
 
     fun showScore(quizScore: QuizScore) {
-        val intent = Intent(this,ScoreActivity::class.java)
+        val intent = Intent(this, ScoreActivity::class.java)
         intent.putExtra(Extras.Score, quizScore)
 
         startActivity(intent)
@@ -143,6 +147,8 @@ class QuizActivity : BaseActivity() {
 
 class QuestionAdapter(question: Question? = null, private val onChoiceClicked: (Choice) -> Unit) : RecyclerView.Adapter<ChoicesViewHolder>() {
 
+    var lockedForAnimation = false
+
     var question: Question? = question
         set(newValue) {
             field = newValue
@@ -157,8 +163,30 @@ class QuestionAdapter(question: Question? = null, private val onChoiceClicked: (
     override fun getItemCount(): Int = question?.choices?.count() ?: 0
 
     override fun onBindViewHolder(holder: ChoicesViewHolder, position: Int) {
+        val context = holder.choiceTextView.context
+
         question?.let {
-            holder.bind(it.choices[position], onChoiceClicked)
+            val choice = it.choices[position]
+            val background = if (choice.correct) {
+                R.drawable.bg_transition_correct
+            } else {
+                R.drawable.bg_transition_incorrect
+            }
+
+            holder.choiceTextView.background = ContextCompat.getDrawable(context, background)
+
+            holder.bind(choice, {
+                lockedForAnimation = true
+
+                val itemBackground = (holder.choiceTextView.background as TransitionDrawable)
+                itemBackground.startTransition(200)
+
+                holder.choiceTextView.postDelayed({
+                    lockedForAnimation = false
+                    onChoiceClicked(it)
+                }, 400)
+
+            })
         }
     }
 }
@@ -168,7 +196,7 @@ class ChoicesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val choiceTextView = itemView.findViewById<TextView>(R.id.choiceTextView)
 
     fun bind(choice: Choice, onChoiceClicked: (Choice) -> Unit) {
-        choiceTextView.setText(choice.title)
+        choiceTextView.text = choice.title
         choiceTextView.setOnClickListener { onChoiceClicked(choice) }
     }
 }
