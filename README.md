@@ -1,24 +1,16 @@
-#To Do:
+# Quizzical App for Android v2
 
-- [x] Migrate to Kotlin
-- [x] Migrate to proper MVP
-- [x] Set up room
-- [x] Save categories to Room
-- [x] Load categories through room
-- [x] Display categories using livedata and viewmodel
-- [x] Set timeout on loading categories from db
-- [x] cache categories in memory
+## 1. Introduction
 
-- [x] load questions
-- [x] save questions to room
-- [x] load questions from room
-- [x] display questions using livedata and viewmodel
-- [x] rotate question pages
-- [x] Set timeout on loading questions from db
+This repository contains the source code of the Quizzical Android Application.
+The source code for the backend API can be found [here](https://github.com/w-k-s/aws-lambda-quizzical).
 
-- [x] proper error handling
+## 2. History
 
-- [x] rotating device
+The Quizzical app and API were originally developed in 2012 as part of a university coursework.
+I've continued to work on these projects in order to try out new tools on Android and on the backend.
 
-- [] fix dagger injections
-- [] animations?
+The advantage of using this project as a testbed is that it only contains three screens (`categories`, `quiz` and `score`) so changes can be made easily, usually in one day.
+
+- **[Version 1](https://github.com/w-k-s/Android-Quizzical-v1) (2013)** Amateur Android project in Java (no design patterns, no database, `AsyncTasks` and `ListView`s).
+- **Version 2 (2015)** (this repository): Rewritten in Kotlin with coroutines, MVP, Dagger, Room and Retrofit.
