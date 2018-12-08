@@ -18,10 +18,10 @@ data class ChoiceEntity(
         val correct: Boolean,
 
         @ColumnInfo(name = "questionId")
-        val questionId: String
+        val questionId: Long
 ) {
 
-    constructor(questionId: String, choice: Choice) : this(0,choice.title, choice.correct, questionId)
+    constructor(questionId: Long, choice: Choice) : this(0,choice.title, choice.correct, questionId)
 
     fun toChoice() = Choice(this.title, this.correct)
 }

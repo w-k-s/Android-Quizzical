@@ -41,7 +41,7 @@ class ApiModule {
     fun provideRetrofit(client: OkHttpClient): Retrofit {
 
         return Retrofit.Builder()
-                .baseUrl("http://34.245.141.120:3000")
+                .baseUrl("https://1pvdx8s5k7.execute-api.ap-south-1.amazonaws.com/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .client(client)

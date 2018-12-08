@@ -5,12 +5,9 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class Id(@SerializedName("\$oid") val id: String = "") : Parcelable
-
-@Parcelize
 data class Question(
-        @SerializedName("_id")
-        val id : Id = Id(),
+        @SerializedName("id")
+        val id : Long = 0,
 
         @SerializedName("question")
         val title: String = "",

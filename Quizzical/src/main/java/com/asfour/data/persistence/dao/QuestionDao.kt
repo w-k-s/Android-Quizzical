@@ -18,7 +18,7 @@ abstract class QuestionDao {
     abstract fun _findQuestionsByCategory(category: String, offset: Int, limit: Int): List<QuestionEntity>
 
     @Query("SELECT * FROM choices WHERE questionId = :questionId")
-    abstract fun _findChoicesByQuestionId(questionId: String): List<ChoiceEntity>
+    abstract fun _findChoicesByQuestionId(questionId: Long): List<ChoiceEntity>
 
     @Query("DELETE FROM questions")
     abstract fun deleteAll()

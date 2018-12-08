@@ -14,10 +14,10 @@ import retrofit2.http.Query;
  */
 public interface QuizzicalApi {
 
-    @GET("/api/v3/categories")
+    @GET("/prod/categories")
     Deferred<Categories> getCategories();
 
-    @GET("/api/v3/questions")
+    @GET("/prod/questions")
     Deferred<ApiResponse<List<Question>>> getQuestions(
             @Query("category") String category,
             @Query("page") int page,

@@ -31,7 +31,6 @@ public class App extends Application {
 
     }
 
-
     public static AppComponent component(){
         return mAppComponent;
     }

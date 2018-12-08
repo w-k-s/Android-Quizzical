@@ -5,7 +5,6 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import com.asfour.data.persistence.entities.QuestionEntity.Companion.TABLE_NAME
-import com.asfour.data.questions.Id
 import com.asfour.data.questions.Question
 
 @Entity(tableName = TABLE_NAME)
@@ -13,7 +12,7 @@ data class QuestionEntity(
 
         @PrimaryKey
         @ColumnInfo(name = "id")
-        val id: String,
+        val id: Long,
 
         @ColumnInfo(name = "title")
         val title: String,
@@ -25,14 +24,14 @@ data class QuestionEntity(
     var choices: List<ChoiceEntity> = emptyList()
 
     constructor(question: Question) :
-            this(question.id.id,
+            this(question.id,
                     question.title,
                     question.category) {
-        this.choices = question.choices.map { ChoiceEntity(question.id.id, it) }
+        this.choices = question.choices.map { ChoiceEntity(question.id, it) }
     }
 
     fun toQuestion() = Question(
-            Id(this.id),
+            this.id,
             this.title,
             this.category,
             this.choices.map { it.toChoice() }
