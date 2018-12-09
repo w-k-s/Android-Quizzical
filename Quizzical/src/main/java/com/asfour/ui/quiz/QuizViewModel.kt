@@ -21,7 +21,7 @@ class QuizViewModel(val app: Application,
                     private val quizRepository: QuestionsRepository,
                     private val connectivityAssistant: ConnectivityAssistant) : AndroidViewModel(app) {
 
-    private var quiz: Quiz = Quiz(category, emptyList())
+    private var quiz: Quiz? = null
 
     val loading = MutableLiveData<Boolean>()
     val loadingError = MutableLiveData<String>()
@@ -36,7 +36,16 @@ class QuizViewModel(val app: Application,
     }
 
     fun startQuiz() {
-        loadQuestions()
+        if(quiz == null){
+            loadQuestions()
+        }else{
+            resumeQuiz()
+        }
+    }
+
+    private fun resumeQuiz(){
+        //triggers display of current question on ui
+        question.value = question.value
     }
 
     private fun loadQuestions() {
@@ -46,24 +55,26 @@ class QuizViewModel(val app: Application,
                 val hasInternetConnection = connectivityAssistant.hasInternetConnection()
                 val questions = quizRepository.loadQuestions(category, ignoreExpiry = !hasInternetConnection)
                 quiz = Quiz(category, questions)
-                question.value = quiz.next()
+                question.value = quiz!!.next()
             } catch (e: Exception) {
                 loadingError.value = app.getString(R.string.err_fetching_questions)
-            }finally {
+            } finally {
                 loading.value = false
             }
         }
     }
 
     fun onQuestionAnswered(choice: Choice) {
-        if (choice.correct) {
-            quiz.incrementScore()
-        }
+        quiz?.let { quiz ->
+            if (choice.correct) {
+                quiz.incrementScore()
+            }
 
-        if (quiz.hasNext()) {
-            question.value = quiz.next()
-        } else {
-            score.value = quiz.finalScore()
+            if (quiz.hasNext()) {
+                question.value = quiz.next()
+            } else {
+                score.value = quiz.finalScore()
+            }
         }
     }
 }

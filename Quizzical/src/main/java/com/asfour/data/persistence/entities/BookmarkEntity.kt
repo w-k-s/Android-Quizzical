@@ -14,12 +14,20 @@ data class BookmarkEntity(
         @ColumnInfo(name = "category")
         val category: String,
 
+        /**
+         * The page to start reading from
+         */
         @ColumnInfo(name = "page")
-        val page: Int = 1,
+        val pageToLoad: Int = 1,
 
         @ColumnInfo(name = "page_size")
         val pageSize: Int = 10,
 
         @ColumnInfo(name = "page_count")
         val pageCount: Int = 1
-)
+) {
+    fun nextBookmark(): BookmarkEntity {
+        val nexPage = if (pageToLoad + 1 > pageCount) 1 else pageToLoad + 1
+        return copy(pageToLoad = nexPage)
+    }
+}

@@ -13,7 +13,7 @@ interface BookmarkDao {
     fun insert(bookmark: BookmarkEntity)
 
     @Query("SELECT * FROM bookmarks WHERE category = :category")
-    fun findBookmarkByCategory(category: String): BookmarkEntity
+    fun findBookmarkByCategory(category: String): BookmarkEntity?
 
     @Query("DELETE FROM bookmarks WHERE category = :category")
     fun deleteBookmarkForCategory(category: String)

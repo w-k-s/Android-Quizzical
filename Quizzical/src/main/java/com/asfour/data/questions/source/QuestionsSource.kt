@@ -1,6 +1,6 @@
 package com.asfour.data.questions.source
 
-import com.asfour.data.api.ApiResponse
+import com.asfour.data.api.Paginated
 import com.asfour.data.api.QuizzicalApi
 import com.asfour.data.categories.Category
 import com.asfour.data.persistence.dao.AuditDao
@@ -19,12 +19,16 @@ class QuestionsLocalDataSource(private val questionsDao: QuestionDao,
                                private val bookmarkDao: BookmarkDao,
                                private val auditDao: AuditDao) {
 
-    suspend fun saveQuestions(questions: List<Question>) {
+    suspend fun saveQuestions(questions: List<Question>, page: Int) {
         return GlobalScope.async {
-            questions.first()?.let {
-                val category = it.category
-                questionsDao.deleteQuestionsForCategory(category)
-                bookmarkDao.deleteBookmarkForCategory(category)
+
+            //if loading questions on page 1, delete all exiting questions
+            if (page == 1) {
+                questions.first()?.let {
+                    val category = it.category
+                    questionsDao.deleteQuestionsForCategory(category)
+                    bookmarkDao.deleteBookmarkForCategory(category)
+                }
             }
             questionsDao.insert(questions.map { QuestionEntity(it) })
             auditDao.auditEntity(AuditEntity(QuestionEntity.TABLE_NAME))
@@ -51,7 +55,7 @@ class QuestionsLocalDataSource(private val questionsDao: QuestionDao,
 
 class QuestionsRemoteDataSource(private val quizzicalApi: QuizzicalApi) {
 
-    suspend fun loadQuestions(category: Category, page: Int, size: Int): ApiResponse<List<Question>> = quizzicalApi.getQuestions(category.title, page, size).await()
+    suspend fun loadQuestions(category: Category, page: Int, size: Int): Paginated<List<Question>> = quizzicalApi.getQuestions(category.title, page, size).await()
 }
 
 class QuestionsRepository(private val remoteSource: QuestionsRemoteDataSource,
@@ -59,13 +63,12 @@ class QuestionsRepository(private val remoteSource: QuestionsRemoteDataSource,
 
     private suspend fun loadQuestionsRemotely(category: Category, bookmark: BookmarkEntity): List<Question> {
         return GlobalScope.async {
-            val response = remoteSource.loadQuestions(category, bookmark.page, bookmark.pageSize)
+            val response = remoteSource.loadQuestions(category, bookmark.pageToLoad, bookmark.pageSize)
 
             val questions = response.data
-            val nextPage = if (response.page + 1 > response.pageCount) 1 else response.page + 1
-            val newBookmark = BookmarkEntity(category.title, nextPage, bookmark.pageSize, response.pageCount)
+            val newBookmark = bookmark.copy(pageToLoad = response.nextPage, pageCount = response.pageCount)
 
-            localSource.saveQuestions(questions)
+            localSource.saveQuestions(questions, response.page)
             localSource.saveBookmark(newBookmark)
 
             questions
@@ -76,10 +79,8 @@ class QuestionsRepository(private val remoteSource: QuestionsRemoteDataSource,
     private suspend fun loadQuestionsLocally(category: Category, bookmark: BookmarkEntity, ignoreExpiry: Boolean): List<Question> {
         return GlobalScope.async {
 
-            val questions = localSource.fetchQuestions(category, bookmark.page, bookmark.pageSize, ignoreExpiry)
-            val nextPage = if (bookmark.page + 1 > bookmark.pageCount) 1 else bookmark.page + 1
-            val newBookmark = BookmarkEntity(category.title, nextPage, bookmark.pageSize, bookmark.pageCount)
-            localSource.saveBookmark(newBookmark)
+            val questions = localSource.fetchQuestions(category, bookmark.pageToLoad, bookmark.pageSize, ignoreExpiry)
+            localSource.saveBookmark(bookmark.nextBookmark())
             questions
         }.await()
     }

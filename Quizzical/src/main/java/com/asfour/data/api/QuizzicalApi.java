@@ -18,7 +18,7 @@ public interface QuizzicalApi {
     Deferred<Categories> getCategories();
 
     @GET("/prod/questions")
-    Deferred<ApiResponse<List<Question>>> getQuestions(
+    Deferred<Paginated<List<Question>>> getQuestions(
             @Query("category") String category,
             @Query("page") int page,
             @Query("size") int pageSize);

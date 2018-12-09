@@ -43,7 +43,8 @@ class QuizActivity : BaseActivity() {
     lateinit var connectivityAssistant: ConnectivityAssistant
     private lateinit var quizViewModel: QuizViewModel
 
-    private var selectionEnabled: Boolean = false
+    private var selectionEnabled = false
+    private var resumeAfterSaveInstanceState = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
