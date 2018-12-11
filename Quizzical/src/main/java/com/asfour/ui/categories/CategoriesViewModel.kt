@@ -29,7 +29,7 @@ class CategoriesViewModel(private val app: Application,
     init {
         loading.value = true
         loadingError.value = ""
-        categories.value = Categories()
+        categories.value = Categories.newInstance()
     }
 
     fun loadCategories() {

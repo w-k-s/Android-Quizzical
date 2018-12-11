@@ -48,6 +48,7 @@ class CategoryListActivity : BaseActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_category_list)
+        updateSpanCount()
 
         App.component().inject(this)
 
@@ -58,9 +59,7 @@ class CategoryListActivity : BaseActivity() {
         setupViewModel()
     }
 
-
     private fun setupViewModel() {
-        titleTextView.text = getString(R.string.app_name)
         categoriesRecyclerView.adapter = CategoriesAdapter(onCategorySelected = { category ->
             if (selectionEnabled) {
                 selectionEnabled = false
@@ -141,12 +140,12 @@ class CategoryListActivity : BaseActivity() {
     }
 }
 
-class CategoriesAdapter(categories: Categories = Categories(),
+class CategoriesAdapter(categories: Categories = Categories.newInstance(),
                         private val onCategorySelected: (Category) -> Unit) : RecyclerView.Adapter<CategoryViewHolder>() {
 
     var categories: Categories = categories
         set(newValue) {
-            field = newValue
+            field = newValue.sorted()
             notifyDataSetChanged()
         }
 
@@ -169,9 +168,9 @@ class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             it.text = category.title
             it.typeface = ResourcesCompat.getFont(itemView.context, R.font.architects_daughter)
             it.setTextColor(ContextCompat.getColor(itemView.context, R.color.white))
-            it.setOnClickListener({
+            it.setOnClickListener {
                 onCategorySelected(category)
-            })
+            }
         }
     }
 

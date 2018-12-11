@@ -44,7 +44,6 @@ class QuizActivity : BaseActivity() {
     private lateinit var quizViewModel: QuizViewModel
 
     private var selectionEnabled = false
-    private var resumeAfterSaveInstanceState = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

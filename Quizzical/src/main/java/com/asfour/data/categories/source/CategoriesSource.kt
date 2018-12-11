@@ -24,9 +24,9 @@ class CategoriesLocalDataSource(private val categoryDao: CategoryDao,
             val expired = auditDao.isEntityExpired(CategoryEntity.TABLE_NAME, TimeUnit.DAYS.toSeconds(7))
 
             if (!ignoreExpiry && expired) {
-                Categories()
+                Categories.newInstance()
             } else {
-                Categories(categoryDao.list().map { it.toCategory() })
+                Categories.newInstance(categoryDao.list().map { it.toCategory() })
             }
 
         }.await()
@@ -43,7 +43,7 @@ class CategoriesLocalDataSource(private val categoryDao: CategoryDao,
 class CategoriesRepository(private val remoteDataSource: CategoriesRemoteDataSource,
                            private val localDataSource: CategoriesLocalDataSource) {
 
-    private var categories: Categories = Categories()
+    private var categories: Categories = Categories.newInstance()
 
     suspend fun categories(forceRefresh: Boolean = false,
                            ignoreExpiry: Boolean = false): Categories {

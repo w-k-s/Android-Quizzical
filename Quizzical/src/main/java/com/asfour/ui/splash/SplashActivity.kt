@@ -2,6 +2,7 @@ package com.asfour.ui.splash
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 
 import com.asfour.R
 import com.asfour.ui.base.BaseActivity
@@ -16,7 +17,9 @@ class SplashActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_splash)
 
-        startActivity(Intent(this@SplashActivity, CategoryListActivity::class.java))
+        Handler().postDelayed({
+            startActivity(Intent(this@SplashActivity, CategoryListActivity::class.java))
+        }, 500)
     }
 
     override fun onPause() {

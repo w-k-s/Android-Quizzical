@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorAccent">@android:color/transparent</color>
+
     <color name="light_blue">#00bfff</color>
     <color name="blue">#4169e1</color>
     <color name="pink">#FF6A6A</color>

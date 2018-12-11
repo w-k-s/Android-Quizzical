@@ -38,8 +38,8 @@ abstract class QuestionDao {
     @Transaction
     open fun insert(questions: List<QuestionEntity>) {
         for (question in questions) {
-            _insertChoices(question.choices)
             _insertQuestion(question)
+            _insertChoices(question.choices)
         }
     }
 

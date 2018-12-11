@@ -8,7 +8,8 @@ import com.asfour.data.questions.Choice
 @Entity(tableName = "choices")
 data class ChoiceEntity(
 
-        @PrimaryKey(autoGenerate = true)
+        @PrimaryKey
+        @ColumnInfo(name = "id")
         val id: Long,
 
         @ColumnInfo(name = "title")
@@ -21,7 +22,7 @@ data class ChoiceEntity(
         val questionId: Long
 ) {
 
-    constructor(questionId: Long, choice: Choice) : this(0,choice.title, choice.correct, questionId)
+    constructor(questionId: Long, choice: Choice) : this(choice.id,choice.title, choice.correct, questionId)
 
-    fun toChoice() = Choice(this.title, this.correct)
+    fun toChoice() = Choice(this.id, this.title, this.correct)
 }
