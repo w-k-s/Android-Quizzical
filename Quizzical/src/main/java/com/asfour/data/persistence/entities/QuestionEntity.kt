@@ -6,6 +6,7 @@ import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import com.asfour.data.persistence.entities.QuestionEntity.Companion.TABLE_NAME
 import com.asfour.data.questions.Question
+import java.util.Collections.emptyList
 
 @Entity(tableName = TABLE_NAME)
 data class QuestionEntity(
@@ -19,7 +20,7 @@ data class QuestionEntity(
 
         @ColumnInfo(name = "category")
         val category: String
-) {
+) : Auditable {
     @Ignore
     var choices: List<ChoiceEntity> = emptyList()
 
@@ -40,6 +41,7 @@ data class QuestionEntity(
 
     companion object {
         const val TABLE_NAME = "questions"
-
     }
+
+    override fun entityName() = "$TABLE_NAME.$category"
 }

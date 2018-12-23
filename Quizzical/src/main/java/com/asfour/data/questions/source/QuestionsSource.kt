@@ -6,7 +6,6 @@ import com.asfour.data.categories.Category
 import com.asfour.data.persistence.dao.AuditDao
 import com.asfour.data.persistence.dao.BookmarkDao
 import com.asfour.data.persistence.dao.QuestionDao
-import com.asfour.data.persistence.entities.AuditEntity
 import com.asfour.data.persistence.entities.BookmarkEntity
 import com.asfour.data.persistence.entities.QuestionEntity
 import com.asfour.data.questions.Question
@@ -20,18 +19,24 @@ class QuestionsLocalDataSource(private val questionsDao: QuestionDao,
                                private val auditDao: AuditDao) {
 
     suspend fun saveQuestions(questions: List<Question>, page: Int) {
+        if (questions.isEmpty()) {
+            return
+        }
+
         return GlobalScope.async {
 
-            //if loading questions on page 1, delete all exiting questions
+            val category = questions.first().category
+            val entities = questions.map { QuestionEntity(it) }
+
             if (page == 1) {
-                questions.first()?.let {
-                    val category = it.category
-                    questionsDao.deleteQuestionsForCategory(category)
-                    bookmarkDao.deleteBookmarkForCategory(category)
-                }
+                //if loading questions on page 1, delete all exiting questions
+                questionsDao.deleteQuestionsForCategory(category)
+                bookmarkDao.deleteBookmarkForCategory(category)
             }
-            questionsDao.insert(questions.map { QuestionEntity(it) })
-            auditDao.auditEntity(AuditEntity(QuestionEntity.TABLE_NAME))
+
+            questionsDao.insert(entities)
+            auditDao.auditEntity(entities.first())
+
         }.await()
     }
 

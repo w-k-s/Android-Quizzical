@@ -5,12 +5,20 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 import java.util.*
 
+interface Auditable {
+    fun entityName(): String
+}
+
 @Entity(tableName = "audits")
-data class AuditEntity(
+class AuditEntity(
         @PrimaryKey
         @ColumnInfo(name = "entity")
-        val entityName: String,
+        val auditable: String,
 
         @ColumnInfo(name = "last_modified_on")
         val date: Date = Date()
-)
+) {
+    companion object {
+        fun newInstance(auditable: Auditable) = AuditEntity(auditable.entityName())
+    }
+}

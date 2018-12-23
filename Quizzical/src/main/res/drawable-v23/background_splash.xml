@@ -12,9 +12,15 @@
                 android:type="radial"/>
         </shape>
     </item>
-    <item>
+    <item
+        android:drawable="@drawable/ic_quizzical"
+        android:gravity="center" />
+    <item
+        android:width="@dimen/splash_asfour_logo_width"
+        android:height="@dimen/splash_asfour_logo_height"
+        android:bottom="@dimen/splash_asfour_logo_bottom_offset"
+        android:gravity="center_horizontal|bottom">
         <bitmap
-            android:gravity="center"
             android:src="@drawable/logo_asfour"
             />
     </item>

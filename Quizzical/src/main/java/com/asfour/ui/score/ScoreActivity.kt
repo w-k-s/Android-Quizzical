@@ -1,12 +1,8 @@
 package com.asfour.ui.score
 
-import android.graphics.Typeface
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.view.View
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-
 import com.asfour.Extras
 import com.asfour.R
 import com.asfour.data.quiz.QuizScore
@@ -22,15 +18,6 @@ class ScoreActivity : BaseActivity() {
     private var quizScore: QuizScore? = null
 
     private val colors: IntArray by lazy { resources.getIntArray(R.array.grade_colors) }
-
-    private val gradeStampAnimationListener = object : Animation.AnimationListener {
-
-        override fun onAnimationStart(animation: Animation) {}
-
-        override fun onAnimationRepeat(animation: Animation) {}
-
-        override fun onAnimationEnd(animation: Animation) {}
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,18 +70,14 @@ class ScoreActivity : BaseActivity() {
     private fun animateGradeStamp(grade: String) {
 
         gradeTextView.text = String.format("[ %s ]", grade)
-        gradeTextView.visibility = View.VISIBLE
 
         val scoreAnimation = AnimationUtils.loadAnimation(this, R.anim.score)
-        scoreAnimation.setAnimationListener(gradeStampAnimationListener)
 
         gradeTextView.startAnimation(scoreAnimation)
-
     }
 
     companion object {
-
-        private val MAX_PERCENTAGE = 100
-        private val MILLISECONDS_PER_TICK: Long = 50
+        private const val MAX_PERCENTAGE = 100
+        private const val MILLISECONDS_PER_TICK: Long = 50
     }
 }

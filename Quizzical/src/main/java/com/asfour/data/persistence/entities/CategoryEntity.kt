@@ -11,7 +11,7 @@ data class CategoryEntity(
 
         @PrimaryKey
         @ColumnInfo(name = "title")
-        val title: String) {
+        val title: String) : Auditable {
 
     constructor(category: Category) : this(category.title)
 
@@ -20,4 +20,6 @@ data class CategoryEntity(
     companion object {
         const val TABLE_NAME = "categories"
     }
+
+    override fun entityName() = TABLE_NAME
 }

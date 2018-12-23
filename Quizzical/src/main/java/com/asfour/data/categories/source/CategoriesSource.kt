@@ -4,7 +4,6 @@ import com.asfour.data.api.QuizzicalApi
 import com.asfour.data.categories.Categories
 import com.asfour.data.persistence.dao.AuditDao
 import com.asfour.data.persistence.dao.CategoryDao
-import com.asfour.data.persistence.entities.AuditEntity
 import com.asfour.data.persistence.entities.CategoryEntity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -33,9 +32,13 @@ class CategoriesLocalDataSource(private val categoryDao: CategoryDao,
     }
 
     suspend fun saveCategories(categories: Categories) = GlobalScope.async {
+
+        val entities = categories.map { CategoryEntity(it) }.toList()
+
         categoryDao.deleteAll()
-        categoryDao.insert(categories.map { CategoryEntity(it) }.toList())
-        auditDao.auditEntity(AuditEntity(CategoryEntity.TABLE_NAME))
+        categoryDao.insert(entities)
+        auditDao.auditEntity(entities.first())
+
     }.await()
 
 }
