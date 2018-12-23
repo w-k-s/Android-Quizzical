@@ -1,7 +1,6 @@
 package com.asfour.ui.quiz
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.drawable.TransitionDrawable
@@ -15,18 +14,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.asfour.Extras
 import com.asfour.R
-import com.asfour.application.App
 import com.asfour.data.categories.Category
 import com.asfour.data.questions.Choice
 import com.asfour.data.questions.Question
-import com.asfour.data.questions.source.QuestionsRepository
 import com.asfour.data.quiz.QuizScore
 import com.asfour.ui.base.BaseActivity
 import com.asfour.ui.score.ScoreActivity
-import com.asfour.utils.ConnectivityAssistant
 import com.asfour.utils.asVisibility
 import kotlinx.android.synthetic.main.layout_question.*
-import javax.inject.Inject
+import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class QuizActivity : BaseActivity() {
 
@@ -37,11 +34,8 @@ class QuizActivity : BaseActivity() {
         }
     })
 
-    @Inject
-    lateinit var questionsRepository: QuestionsRepository
-    @Inject
-    lateinit var connectivityAssistant: ConnectivityAssistant
-    private lateinit var quizViewModel: QuizViewModel
+    private val category by lazy { intent.extras!!.getParcelable(Extras.Category) as Category }
+    private val quizViewModel: QuizViewModel by viewModel { parametersOf(category) }
 
     private var selectionEnabled = false
 
@@ -50,18 +44,7 @@ class QuizActivity : BaseActivity() {
         setContentView(R.layout.layout_question)
         updateSpanCount()
 
-        val category = intent.extras?.getParcelable(Extras.Category) as? Category
-        if (category == null) {
-            finish()
-        }
-
-        App.component().inject(this)
-
         choicesRecycler.adapter = adapter
-
-        quizViewModel = ViewModelProviders
-                .of(this, QuizViewModelFactory(application, category!!, questionsRepository, connectivityAssistant))
-                .get(QuizViewModel::class.java)
 
         setupViewModel()
 
@@ -191,7 +174,7 @@ class QuestionAdapter(question: Question? = null, private val onChoiceClicked: (
 
 class ChoicesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    val choiceTextView : TextView = itemView.findViewById(R.id.choiceTextView)
+    val choiceTextView: TextView = itemView.findViewById(R.id.choiceTextView)
 
     fun bind(choice: Choice, onChoiceClicked: (Choice) -> Unit) {
         choiceTextView.text = choice.title
