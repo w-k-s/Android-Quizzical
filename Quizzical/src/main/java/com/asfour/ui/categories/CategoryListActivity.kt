@@ -1,7 +1,6 @@
 package com.asfour.ui.categories
 
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
@@ -15,16 +14,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.asfour.Extras
 import com.asfour.R
-import com.asfour.application.App
 import com.asfour.data.categories.Categories
 import com.asfour.data.categories.Category
-import com.asfour.data.categories.source.CategoriesRepository
 import com.asfour.ui.base.BaseActivity
 import com.asfour.ui.quiz.QuizActivity
-import com.asfour.utils.ConnectivityAssistant
 import com.asfour.utils.asVisibility
 import kotlinx.android.synthetic.main.layout_category_list.*
-import javax.inject.Inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 /**
  * An activity that displays a list of quiz activities.
@@ -34,13 +30,7 @@ import javax.inject.Inject
  */
 class CategoryListActivity : BaseActivity() {
 
-    @Inject
-    lateinit var categoriesRepository: CategoriesRepository
-
-    @Inject
-    lateinit var connectionAssistant: ConnectivityAssistant
-
-    lateinit var categoriesViewModel: CategoriesViewModel
+    private val categoriesViewModel: CategoriesViewModel by viewModel()
 
     private var selectionEnabled: Boolean = false
 
@@ -50,12 +40,6 @@ class CategoryListActivity : BaseActivity() {
         setContentView(R.layout.layout_category_list)
         updateSpanCount()
 
-        App.component().inject(this)
-
-        categoriesViewModel = ViewModelProviders
-                .of(this, CategoriesViewModelFactory(application, categoriesRepository, connectionAssistant))
-                .get(CategoriesViewModel::class.java)
-
         setupViewModel()
     }
 
@@ -63,14 +47,14 @@ class CategoryListActivity : BaseActivity() {
         categoriesRecyclerView.adapter = CategoriesAdapter(onCategorySelected = { category ->
             if (selectionEnabled) {
                 selectionEnabled = false
-                categoriesViewModel?.startQuiz.value = category
+                categoriesViewModel.startQuiz.value = category
             }
         })
 
         categoriesViewModel.apply {
             startQuiz.observe(
                     this@CategoryListActivity,
-                    Observer { it?.let { startQuiz(it) } }
+                    Observer { category -> category?.let { startQuiz(it) } }
             )
         }
         categoriesViewModel.loading.observe(
@@ -79,11 +63,11 @@ class CategoryListActivity : BaseActivity() {
         )
         categoriesViewModel.loadingError.observe(
                 this@CategoryListActivity,
-                Observer { it?.let { showError(it) } }
+                Observer { error -> error?.let { showError(it) } }
         )
         categoriesViewModel.categories.observe(
                 this@CategoryListActivity,
-                Observer { it?.let { showCategories(it) } }
+                Observer { categories -> categories?.let { showCategories(it) } }
         )
     }
 
@@ -92,7 +76,7 @@ class CategoryListActivity : BaseActivity() {
         updateSpanCount()
     }
 
-    fun updateSpanCount() {
+    private fun updateSpanCount() {
         val layoutManager = (categoriesRecyclerView.layoutManager as GridLayoutManager)
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -107,12 +91,12 @@ class CategoryListActivity : BaseActivity() {
         categoriesViewModel.loadCategories()
     }
 
-    fun showCategories(categories: Categories) {
+    private fun showCategories(categories: Categories) {
         selectionEnabled = true
         (categoriesRecyclerView.adapter as CategoriesAdapter).categories = categories
     }
 
-    fun startQuiz(category: Category) {
+    private fun startQuiz(category: Category) {
 
         val intent = Intent(this, QuizActivity::class.java)
         intent.putExtra(Extras.Category, category)
@@ -120,7 +104,7 @@ class CategoryListActivity : BaseActivity() {
         startActivity(intent)
     }
 
-    fun setProgressIndicator(visible: Boolean) {
+    private fun setProgressIndicator(visible: Boolean) {
 
         categoriesRecyclerView.visibility = (!visible).asVisibility()
         progressLayout.visibility = (visible).asVisibility()
@@ -132,7 +116,7 @@ class CategoryListActivity : BaseActivity() {
         }
     }
 
-    fun showError(message: String) {
+    private fun showError(message: String) {
         categoriesRecyclerView.visibility = View.GONE
         progressBar.visibility = View.GONE
         progressLayout.visibility = View.VISIBLE
