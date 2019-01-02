@@ -8,3 +8,5 @@ gradlew
 Quizzical/build/*
 Quizzical/gradle/
 Quizzical/\.idea/
+google-services.json
+secret.properties

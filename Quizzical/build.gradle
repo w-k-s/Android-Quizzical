@@ -2,7 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'io.fabric'
 
+// Read secret.properties located in project root
+def secretPropertiesFile = rootProject.file("secret.properties");
+def secretProperties = new Properties()
+secretProperties.load(new FileInputStream(secretPropertiesFile))
 
 android {
     compileSdkVersion 28
@@ -13,6 +18,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         vectorDrawables.useSupportLibrary = true
+        manifestPlaceholders = [ fabricApiKey:secretProperties['fabricApiKey']]
     }
 
     buildTypes {
@@ -39,9 +45,16 @@ dependencies {
 
     implementation "com.facebook.stetho:stetho:$rootProject.ext.stethoVersion"
 
+    implementation "com.google.firebase:firebase-core:$rootProject.ext.firebaseCoreVersion"
+    implementation "com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion"
+
     implementation "com.android.support:support-annotations:$rootProject.ext.supportVersion"
-    implementation "com.android.support:recyclerview-v7:$rootProject.ext.supportVersion"
-    implementation "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
+    implementation("com.android.support:recyclerview-v7:$rootProject.ext.supportVersion"){
+        exclude module: 'com.android.support', group: 'animated-vector-drawable'
+    }
+    implementation("com.android.support:appcompat-v7:$rootProject.ext.supportVersion"){
+        exclude module: 'com.android.support', group: 'animated-vector-drawable'
+    }
 
     implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
     kapt "android.arch.persistence.room:compiler:$rootProject.roomVersion"
@@ -75,6 +88,10 @@ dependencies {
         exclude module: 'objenesis'
     }
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-core:2.15.0'
-    testImplementation "com.android.support:support-v4:$supportVersion"
+    testImplementation "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
+    testImplementation("com.android.support:support-v4:$rootProject.ext.supportVersion"){
+        exclude module: 'com.android.support', group: 'animated-vector-drawable'
+    }
 }
+
+apply plugin: 'com.google.gms.google-services'
